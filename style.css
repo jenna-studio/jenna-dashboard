@@ -468,7 +468,7 @@ body {
 
 .task-list {
     list-style: none;
-    max-height: 400px;
+    max-height: 300px;
     overflow-y: auto;
     padding-right: 10px;
 }
@@ -947,33 +947,51 @@ body {
 }
 
 /* ========================================
-   EMAIL WIDGET
+   NOTES WIDGET
    ======================================== */
 
-.email-input-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr auto;
+.note-input-container {
+    display: flex;
+    flex-direction: column;
     gap: 10px;
     margin-bottom: 15px;
 }
 
-.email-list {
+.pixel-textarea {
+    font-family: 'DotGothic16', monospace;
+    background: var(--bg-primary);
+    border: 3px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 12px;
+    font-size: 14px;
+    resize: vertical;
+    min-height: 60px;
+    transition: all 0.2s;
+}
+
+.pixel-textarea:focus {
+    outline: none;
+    border-color: var(--pixel-yellow);
+    box-shadow: 0 0 15px rgba(255, 245, 179, 0.3);
+}
+
+.notes-list {
     list-style: none;
     max-height: 300px;
     overflow-y: auto;
 }
 
-.email-item {
+.note-item {
     background: var(--bg-primary);
     border: 2px solid var(--border-color);
+    border-left: 4px solid var(--pixel-yellow);
     padding: 12px;
     margin-bottom: 8px;
-    cursor: pointer;
     transition: all 0.2s;
-    animation: emailSlideIn 0.3s ease-out;
+    animation: noteSlideIn 0.3s ease-out;
 }
 
-@keyframes emailSlideIn {
+@keyframes noteSlideIn {
     from {
         transform: translateX(20px);
         opacity: 0;
@@ -984,57 +1002,104 @@ body {
     }
 }
 
-.email-item:hover {
+.note-item:hover {
     border-color: var(--pixel-yellow);
     box-shadow: 0 0 10px rgba(255, 245, 179, 0.3);
 }
 
-.email-item.unread {
-    border-left: 4px solid var(--pixel-yellow);
-    background: rgba(255, 245, 179, 0.1);
+.note-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
 }
 
-.email-subject {
+.note-title {
     font-weight: bold;
-    margin-bottom: 5px;
     font-size: 14px;
-}
-
-.email-from {
-    font-size: 12px;
-    color: var(--text-secondary);
-}
-
-.email-note {
-    margin-top: 10px;
-    padding: 10px;
-    background: var(--bg-primary);
-    border: 2px solid var(--pixel-yellow);
-    text-align: center;
     color: var(--pixel-yellow);
 }
 
+.note-content {
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    white-space: pre-wrap;
+}
+
+.note-time {
+    font-size: 10px;
+    color: var(--text-secondary);
+    opacity: 0.7;
+    font-family: var(--font-pixel);
+}
+
+.note-delete {
+    background: var(--pixel-pink);
+    color: var(--bg-primary);
+    border: 2px solid var(--border-color);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1;
+    padding: 0;
+    transition: all 0.2s;
+}
+
+.note-delete:hover {
+    background: #ff6b9d;
+    transform: scale(1.1);
+}
+
 /* ========================================
-   QUOTE WIDGET
+   HSK5 VOCABULARY WIDGET
    ======================================== */
 
-.quote-container {
+.hsk-container {
     background: var(--bg-primary);
     border: 3px solid var(--pixel-green);
     padding: 20px;
     margin-bottom: 15px;
-    min-height: 100px;
+    min-height: 120px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 8px;
 }
 
-.pixel-quote {
-    font-family: var(--font-dot);
-    font-size: 14px;
-    text-align: center;
-    line-height: 1.6;
+.hsk-character {
+    font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", "Noto Sans SC", "STHeiti", sans-serif;
+    font-size: 48px;
     color: var(--pixel-green);
+    font-weight: 600;
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+    letter-spacing: 2px;
+}
+
+.hsk-pinyin {
+    font-family: var(--font-dot);
+    font-size: 18px;
+    color: var(--text-secondary);
+    font-style: italic;
+    letter-spacing: 1px;
+}
+
+.hsk-meaning {
+    font-family: 'DotGothic16', monospace;
+    font-size: 13px;
+    color: var(--pixel-green);
+    text-align: center;
+    border-top: 2px solid var(--pixel-green);
+    padding-top: 8px;
+    margin-top: 5px;
 }
 
 /* ========================================

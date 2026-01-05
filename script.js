@@ -8,7 +8,7 @@
 
 let state = {
     tasks: [],
-    emails: [],
+    notes: [],
     shortcuts: [],
     aiTools: [],
     calendarEvents: [],
@@ -21,7 +21,7 @@ let state = {
         maxXP: 100
     },
     timer: {
-        minutes: 25,
+        minutes: 30,
         seconds: 0,
         isRunning: false,
         interval: null
@@ -43,8 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeShortcuts();
     initializeAITools();
     initializeStats();
-    initializeEmail();
-    initializeQuote();
+    initializeNotes();
+    initializeHSK();
     initializeLevel();
     initializeTimer();
     initializeWidgetControls();
@@ -517,16 +517,20 @@ function closeEventModal() {
 // ========================================
 
 function initializeShortcuts() {
-    // Always use default shortcuts (don't save/load from localStorage)
-    state.shortcuts = [
-        { id: 1, name: 'MAIL', url: 'mailto:', emoji: 'https://img.icons8.com/?size=100&id=7rhqrO588QcU&format=png&color=000000' },
-        { id: 2, name: 'CALENDAR', url: 'https://calendar.google.com', emoji: '📅' },
-        { id: 3, name: 'NOTES', url: 'https://keep.google.com', emoji: '📝' },
-        { id: 4, name: 'DRIVE', url: 'https://drive.google.com', emoji: 'https://img.icons8.com/?size=100&id=ya4CrqO7PgnY&format=png&color=000000' },
-        { id: 5, name: 'GITHUB', url: 'https://github.com', emoji: 'https://img.icons8.com/?size=100&id=bVGqATNwfhYq&format=png&color=000000' },
-        { id: 6, name: 'CHROME', url: 'https://www.google.com/chrome/', emoji: 'https://img.icons8.com/?size=100&id=63785&format=png&color=000000' },
-        { id: 7, name: 'MUSIC APP', url: 'musics://', emoji: 'https://img.icons8.com/?size=100&id=81TSi6Gqk0tm&format=png&color=000000' }
-    ];
+    // Default shortcuts - load only if empty
+    if (state.shortcuts.length === 0) {
+        state.shortcuts = [
+            { id: 1, name: 'MAIL', url: 'mailto:', emoji: 'https://img.icons8.com/?size=100&id=7rhqrO588QcU&format=png&color=000000' },
+            { id: 2, name: 'CALENDAR', url: 'https://calendar.google.com', emoji: '📅' },
+            { id: 3, name: 'NOTES', url: 'https://keep.google.com', emoji: '📝' },
+            { id: 4, name: 'DRIVE', url: 'https://drive.google.com', emoji: 'https://img.icons8.com/?size=100&id=ya4CrqO7PgnY&format=png&color=000000' },
+            { id: 5, name: 'GITHUB', url: 'https://github.com', emoji: 'https://img.icons8.com/?size=100&id=bVGqATNwfhYq&format=png&color=000000' },
+            { id: 6, name: 'CHROME', url: 'https://www.google.com/chrome/', emoji: 'https://img.icons8.com/?size=100&id=63785&format=png&color=000000' },
+            { id: 7, name: 'OBSIDIAN', url: 'obsidian://', emoji: 'https://img.icons8.com/?size=100&id=y3bYGWmo5JdM&format=png&color=000000' },
+            { id: 8, name: 'MUSIC', url: 'shortcuts://run-shortcut?name=play%20playlist', emoji: 'https://img.icons8.com/?size=100&id=81TSi6Gqk0tm&format=png&color=000000' }
+        ];
+        saveToLocalStorage();
+    }
 
     document.getElementById('addShortcutBtn').addEventListener('click', openShortcutModal);
     document.querySelector('.modal-close').addEventListener('click', closeShortcutModal);
@@ -600,13 +604,20 @@ function renderShortcuts() {
             item.innerHTML = `
                 <div class="shortcut-emoji"><img src="${escapeHtml(shortcut.emoji)}" alt="${escapeHtml(shortcut.name)}" class="ai-tool-logo"></div>
                 <div class="shortcut-name">${escapeHtml(shortcut.name)}</div>
+                <button class="shortcut-delete">×</button>
             `;
         } else {
             item.innerHTML = `
                 <div class="shortcut-emoji">${shortcut.emoji}</div>
                 <div class="shortcut-name">${escapeHtml(shortcut.name)}</div>
+                <button class="shortcut-delete">×</button>
             `;
         }
+
+        item.querySelector('.shortcut-delete').addEventListener('click', (e) => {
+            e.preventDefault();
+            deleteShortcut(shortcut.id);
+        });
 
         grid.appendChild(item);
     });
@@ -789,118 +800,222 @@ function updateStreakAndWeekly() {
 }
 
 // ========================================
-// EMAIL
+// NOTES
 // ========================================
 
-function initializeEmail() {
-    const addEmailBtn = document.getElementById('addEmailBtn');
-    const subjectInput = document.getElementById('emailSubject');
+function initializeNotes() {
+    const addNoteBtn = document.getElementById('addNoteBtn');
+    const titleInput = document.getElementById('noteTitle');
+    const contentInput = document.getElementById('noteContent');
 
-    addEmailBtn.addEventListener('click', addEmail);
-    subjectInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') addEmail();
+    addNoteBtn.addEventListener('click', addNote);
+    titleInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            contentInput.focus();
+        }
+    });
+    contentInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && e.ctrlKey) {
+            e.preventDefault();
+            addNote();
+        }
     });
 
-    // Add sample emails if none exist
-    if (state.emails.length === 0) {
-        state.emails = [
-            { id: 1, subject: 'Welcome to Pixel Dashboard!', from: 'System', unread: true },
-            { id: 2, subject: 'Your tasks are waiting', from: 'Reminder', unread: true }
-        ];
-        saveToLocalStorage();
-    }
-
-    renderEmails();
+    renderNotes();
 }
 
-function addEmail() {
-    const subject = document.getElementById('emailSubject').value.trim();
-    const from = document.getElementById('emailFrom').value.trim();
+function addNote() {
+    const title = document.getElementById('noteTitle').value.trim();
+    const content = document.getElementById('noteContent').value.trim();
 
-    if (subject === '' || from === '') {
+    if (title === '' && content === '') {
         return;
     }
 
-    const email = {
+    const note = {
         id: Date.now(),
-        subject,
-        from,
-        unread: true
+        title: title || 'Untitled Note',
+        content: content,
+        createdAt: new Date().toISOString()
     };
 
-    state.emails.unshift(email);
-    document.getElementById('emailSubject').value = '';
-    document.getElementById('emailFrom').value = '';
+    state.notes.unshift(note);
+    document.getElementById('noteTitle').value = '';
+    document.getElementById('noteContent').value = '';
 
     saveToLocalStorage();
-    renderEmails();
+    renderNotes();
 }
 
-function toggleEmailRead(id) {
-    const email = state.emails.find(e => e.id === id);
-    if (email) {
-        email.unread = !email.unread;
-        saveToLocalStorage();
-        renderEmails();
-    }
+function deleteNote(id) {
+    state.notes = state.notes.filter(n => n.id !== id);
+    saveToLocalStorage();
+    renderNotes();
 }
 
-function renderEmails() {
-    const list = document.getElementById('emailList');
+function renderNotes() {
+    const list = document.getElementById('notesList');
     list.innerHTML = '';
 
-    if (state.emails.length === 0) {
-        list.innerHTML = '<li style="text-align: center; padding: 20px; opacity: 0.5;">No messages yet!</li>';
+    if (state.notes.length === 0) {
+        list.innerHTML = '<li style="text-align: center; padding: 20px; opacity: 0.5;">No notes yet!</li>';
         return;
     }
 
-    state.emails.slice(0, 10).forEach(email => {
+    state.notes.slice(0, 10).forEach(note => {
         const li = document.createElement('li');
-        li.className = `email-item ${email.unread ? 'unread' : ''}`;
+        li.className = 'note-item';
+
+        const noteDate = new Date(note.createdAt);
+        const timeStr = noteDate.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+
         li.innerHTML = `
-            <div class="email-subject">${escapeHtml(email.subject)}</div>
-            <div class="email-from">From: ${escapeHtml(email.from)}</div>
+            <div class="note-header">
+                <div class="note-title">${escapeHtml(note.title)}</div>
+                <button class="note-delete">×</button>
+            </div>
+            ${note.content ? `<div class="note-content">${escapeHtml(note.content)}</div>` : ''}
+            <div class="note-time">${timeStr}</div>
         `;
 
-        li.addEventListener('click', () => toggleEmailRead(email.id));
+        li.querySelector('.note-delete').addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteNote(note.id);
+        });
+
         list.appendChild(li);
     });
 }
 
 // ========================================
-// QUOTE
+// HSK5 VOCABULARY
 // ========================================
 
-function initializeQuote() {
-    document.getElementById('newQuoteBtn').addEventListener('click', updateQuote);
+const hsk5Words = [
+    { character: "哎", pinyin: "āi", korean: "이런, 어" },
+    { character: "爱护", pinyin: "ài hù", korean: "아끼다, 소중히 하다" },
+    { character: "安装", pinyin: "ān zhuāng", korean: "설치하다" },
+    { character: "岸", pinyin: "àn", korean: "해안, 강가" },
+    { character: "把握", pinyin: "bǎ wò", korean: "파악하다, 장악하다" },
+    { character: "摆", pinyin: "bǎi", korean: "놓다, 배치하다" },
+    { character: "败", pinyin: "bài", korean: "패배하다" },
+    { character: "报告", pinyin: "bào gào", korean: "보고하다, 보고서" },
+    { character: "背景", pinyin: "bèi jǐng", korean: "배경" },
+    { character: "本质", pinyin: "běn zhì", korean: "본질" },
+    { character: "比例", pinyin: "bǐ lì", korean: "비율" },
+    { character: "必然", pinyin: "bì rán", korean: "필연적인" },
+    { character: "编辑", pinyin: "biān jí", korean: "편집하다" },
+    { character: "标志", pinyin: "biāo zhì", korean: "표지, 상징" },
+    { character: "表达", pinyin: "biǎo dá", korean: "표현하다" },
+    { character: "采取", pinyin: "cǎi qǔ", korean: "취하다, 채택하다" },
+    { character: "产生", pinyin: "chǎn shēng", korean: "발생하다, 생기다" },
+    { character: "常识", pinyin: "cháng shí", korean: "상식" },
+    { character: "成就", pinyin: "chéng jiù", korean: "성취, 업적" },
+    { character: "承认", pinyin: "chéng rèn", korean: "인정하다" },
+    { character: "诚恳", pinyin: "chéng kěn", korean: "성실한, 진지한" },
+    { character: "承担", pinyin: "chéng dān", korean: "담당하다, 책임지다" },
+    { character: "传播", pinyin: "chuán bō", korean: "전파하다, 퍼뜨리다" },
+    { character: "创造", pinyin: "chuàng zào", korean: "창조하다" },
+    { character: "此外", pinyin: "cǐ wài", korean: "이외에" },
+    { character: "达到", pinyin: "dá dào", korean: "도달하다, 달성하다" },
+    { character: "代表", pinyin: "dài biǎo", korean: "대표하다, 대표" },
+    { character: "代替", pinyin: "dài tì", korean: "대신하다" },
+    { character: "单纯", pinyin: "dān chún", korean: "단순한" },
+    { character: "道德", pinyin: "dào dé", korean: "도덕" },
+    { character: "导致", pinyin: "dǎo zhì", korean: "초래하다" },
+    { character: "得意", pinyin: "dé yì", korean: "득의하다" },
+    { character: "灯", pinyin: "dēng", korean: "등, 램프" },
+    { character: "登记", pinyin: "dēng jì", korean: "등록하다" },
+    { character: "地区", pinyin: "dì qū", korean: "지역, 지구" },
+    { character: "地震", pinyin: "dì zhèn", korean: "지진" },
+    { character: "动", pinyin: "dòng", korean: "움직이다" },
+    { character: "独立", pinyin: "dú lì", korean: "독립적인" },
+    { character: "度过", pinyin: "dù guò", korean: "보내다, 지내다" },
+    { character: "短信", pinyin: "duǎn xìn", korean: "문자 메시지" },
+    { character: "对待", pinyin: "duì dài", korean: "대하다, 대우하다" },
+    { character: "发表", pinyin: "fā biǎo", korean: "발표하다" },
+    { character: "发达", pinyin: "fā dá", korean: "발달하다" },
+    { character: "发明", pinyin: "fā míng", korean: "발명하다" },
+    { character: "法院", pinyin: "fǎ yuàn", korean: "법원" },
+    { character: "烦", pinyin: "fán", korean: "번거롭다, 귀찮다" },
+    { character: "反应", pinyin: "fǎn yìng", korean: "반응" },
+    { character: "范围", pinyin: "fàn wéi", korean: "범위" },
+    { character: "方案", pinyin: "fāng àn", korean: "방안, 계획" },
+    { character: "放弃", pinyin: "fàng qì", korean: "포기하다" },
+    { character: "分析", pinyin: "fēn xī", korean: "분석하다" },
+    { character: "奋斗", pinyin: "fèn dòu", korean: "분투하다, 노력하다" },
+    { character: "丰富", pinyin: "fēng fù", korean: "풍부한" },
+    { character: "否定", pinyin: "fǒu dìng", korean: "부정하다" },
+    { character: "妇女", pinyin: "fù nǚ", korean: "부녀, 여성" },
+    { character: "改革", pinyin: "gǎi gé", korean: "개혁하다" },
+    { character: "概括", pinyin: "gài kuò", korean: "개괄하다, 요약하다" },
+    { character: "概念", pinyin: "gài niàn", korean: "개념" },
+    { character: "干脆", pinyin: "gān cuì", korean: "차라리, 아예" },
+    { character: "感激", pinyin: "gǎn jī", korean: "감격하다, 감사하다" },
+    { character: "钢铁", pinyin: "gāng tiě", korean: "강철" },
+    { character: "高速", pinyin: "gāo sù", korean: "고속" },
+    { character: "根本", pinyin: "gēn běn", korean: "근본적인" },
+    { character: "公开", pinyin: "gōng kāi", korean: "공개하다, 공개적인" },
+    { character: "工程", pinyin: "gōng chéng", korean: "공정, 프로젝트" },
+    { character: "功能", pinyin: "gōng néng", korean: "기능" },
+    { character: "共鸣", pinyin: "gòng míng", korean: "공명, 공감" },
+    { character: "贡献", pinyin: "gòng xiàn", korean: "공헌하다" },
+    { character: "观察", pinyin: "guān chá", korean: "관찰하다" },
+    { character: "海关", pinyin: "hǎi guān", korean: "세관" },
+    { character: "合作", pinyin: "hé zuò", korean: "협력하다, 협동" },
+    { character: "核心", pinyin: "hé xīn", korean: "핵심" },
+    { character: "机器", pinyin: "jī qì", korean: "기계" },
+    { character: "激烈", pinyin: "jī liè", korean: "격렬한, 치열한" },
+    { character: "控制", pinyin: "kòng zhì", korean: "제어하다, 통제하다" },
+    { character: "理论", pinyin: "lǐ lùn", korean: "이론" },
+    { character: "利用", pinyin: "lì yòng", korean: "이용하다" },
+    { character: "领导", pinyin: "lǐng dǎo", korean: "영도하다, 지도자" },
+    { character: "媒体", pinyin: "méi tǐ", korean: "매체, 미디어" },
+    { character: "目标", pinyin: "mù biāo", korean: "목표" },
+    { character: "能干", pinyin: "néng gàn", korean: "유능한" },
+    { character: "评价", pinyin: "píng jià", korean: "평가하다" },
+    { character: "企业", pinyin: "qǐ yè", korean: "기업" },
+    { character: "权利", pinyin: "quán lì", korean: "권리" },
+    { character: "热爱", pinyin: "rè ài", korean: "열애하다, 열렬히 사랑하다" },
+    { character: "人才", pinyin: "rén cái", korean: "인재" },
+    { character: "生产", pinyin: "shēng chǎn", korean: "생산하다" },
+    { character: "时代", pinyin: "shí dài", korean: "시대" },
+    { character: "实现", pinyin: "shí xiàn", korean: "실현하다" },
+    { character: "体现", pinyin: "tǐ xiàn", korean: "구현하다, 나타내다" },
+    { character: "统一", pinyin: "tǒng yī", korean: "통일하다" },
+    { character: "透明", pinyin: "tòu míng", korean: "투명한" },
+    { character: "网络", pinyin: "wǎng luò", korean: "네트워크" },
+    { character: "未来", pinyin: "wèi lái", korean: "미래" },
+    { character: "现实", pinyin: "xiàn shí", korean: "현실" },
+    { character: "项目", pinyin: "xiàng mù", korean: "프로젝트, 항목" },
+    { character: "效率", pinyin: "xiào lǜ", korean: "효율" },
+    { character: "中心", pinyin: "zhōng xīn", korean: "중심" },
+    { character: "制度", pinyin: "zhì dù", korean: "제도" }
+];
+
+function initializeHSK() {
+    document.getElementById('newWordBtn').addEventListener('click', updateWord);
+    updateWord(); // Show initial word
 }
 
-function updateQuote() {
-    const quotes = [
-        "Every pixel counts!",
-        "You're doing great! ✨",
-        "Keep pushing forward!",
-        "Small steps, big progress!",
-        "Believe in your pixels!",
-        "Your potential is infinite!",
-        "Make today amazing!",
-        "Dream in pixels! 🌟",
-        "Stay cute, stay productive!",
-        "Level up your life!",
-        "Pixel perfect vibes!",
-        "You're a productivity star!",
-        "Kawaii productivity! 💖",
-        "Retro vibes, modern goals!",
-        "8-bit dreams, HD results!"
-    ];
+function updateWord() {
+    const randomWord = hsk5Words[Math.floor(Math.random() * hsk5Words.length)];
 
-    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-    document.querySelector('.pixel-quote').textContent = `"${randomQuote}"`;
+    document.getElementById('hskCharacter').textContent = randomWord.character;
+    document.getElementById('hskPinyin').textContent = randomWord.pinyin;
+    document.getElementById('hskMeaning').textContent = randomWord.korean;
 
-    // Add bounce animation
-    const quoteContainer = document.querySelector('.quote-container');
-    quoteContainer.classList.add('bounce');
-    setTimeout(() => quoteContainer.classList.remove('bounce'), 500);
+    // Add animation
+    const hskContainer = document.querySelector('.hsk-container');
+    hskContainer.classList.add('bounce');
+    setTimeout(() => hskContainer.classList.remove('bounce'), 500);
 }
 
 // ========================================
@@ -1040,7 +1155,7 @@ function pauseTimer() {
 function resetTimer() {
     pauseTimer();
     const activePreset = document.querySelector('.preset-btn.active');
-    const minutes = activePreset ? parseInt(activePreset.dataset.minutes) : 25;
+    const minutes = activePreset ? parseInt(activePreset.dataset.minutes) : 30;
     state.timer.minutes = minutes;
     state.timer.seconds = 0;
     updateTimerDisplay();

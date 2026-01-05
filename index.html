@@ -88,6 +88,7 @@
                 </div>
                 <div class="widget-body">
                     <div class="shortcuts-grid" id="shortcutsGrid"></div>
+                    <button id="addShortcutBtn" class="pixel-btn pixel-btn-full">+ ADD SHORTCUT</button>
                 </div>
             </div>
 
@@ -129,38 +130,37 @@
                 </div>
             </div>
 
-            <!-- Email Widget -->
-            <div class="widget widget-medium email-widget" data-color="yellow">
+            <!-- Notes Widget -->
+            <div class="widget widget-medium notes-widget" data-color="yellow">
                 <div class="widget-header">
-                    <span class="widget-icon">✉️</span>
-                    <h2>MESSAGES</h2>
+                    <span class="widget-icon">📓</span>
+                    <h2>QUICK NOTES</h2>
                     <span class="widget-close">×</span>
                 </div>
                 <div class="widget-body">
-                    <div class="email-input-container">
-                        <input type="text" id="emailSubject" class="pixel-input" placeholder="Subject..." maxlength="30">
-                        <input type="text" id="emailFrom" class="pixel-input" placeholder="From..." maxlength="20">
-                        <button id="addEmailBtn" class="pixel-btn">+</button>
+                    <div class="note-input-container">
+                        <input type="text" id="noteTitle" class="pixel-input" placeholder="Note title..." maxlength="30">
+                        <textarea id="noteContent" class="pixel-textarea" placeholder="Note content (Ctrl+Enter to save)..." maxlength="150" rows="2"></textarea>
+                        <button id="addNoteBtn" class="pixel-btn">+</button>
                     </div>
-                    <ul id="emailList" class="email-list"></ul>
-                    <div class="email-note">
-                        <small>✨ Manual entry - For display only!</small>
-                    </div>
+                    <ul id="notesList" class="notes-list"></ul>
                 </div>
             </div>
 
-            <!-- Quick Info Widget -->
-            <div class="widget widget-small info-widget" data-color="green">
+            <!-- HSK5 Vocabulary Widget -->
+            <div class="widget widget-small hsk-widget" data-color="green">
                 <div class="widget-header">
-                    <span class="widget-icon">💚</span>
-                    <h2>QUOTE</h2>
+                    <span class="widget-icon">🇨🇳</span>
+                    <h2>HSK5 单词</h2>
                     <span class="widget-close">×</span>
                 </div>
                 <div class="widget-body">
-                    <div class="quote-container" id="quoteContainer">
-                        <p class="pixel-quote">"Every pixel counts!"</p>
+                    <div class="hsk-container" id="hskContainer">
+                        <div class="hsk-character" id="hskCharacter">加油</div>
+                        <div class="hsk-pinyin" id="hskPinyin">jiā yóu</div>
+                        <div class="hsk-meaning" id="hskMeaning">힘내다, 화이팅</div>
                     </div>
-                    <button id="newQuoteBtn" class="pixel-btn pixel-btn-full">NEW QUOTE</button>
+                    <button id="newWordBtn" class="pixel-btn pixel-btn-full">NEW WORD</button>
                 </div>
             </div>
 
@@ -193,16 +193,16 @@
                     <span class="widget-close">×</span>
                 </div>
                 <div class="widget-body">
-                    <div class="timer-display" id="timerDisplay">25:00</div>
+                    <div class="timer-display" id="timerDisplay">30:00</div>
                     <div class="timer-controls">
                         <button class="pixel-btn-small" id="startTimer">▶</button>
                         <button class="pixel-btn-small" id="pauseTimer">❚❚</button>
-                        <button class="pixel-btn-small" id="resetTimer">⟲</button>
+                        <button class="pixel-btn-small" id="resetTimer">⏮</button>
                     </div>
                     <div class="timer-presets">
                         <button class="preset-btn" data-minutes="5">5</button>
-                        <button class="preset-btn" data-minutes="15">15</button>
-                        <button class="preset-btn active" data-minutes="25">25</button>
+                        <button class="preset-btn active" data-minutes="30">30</button>
+                        <button class="preset-btn" data-minutes="60">60</button>
                     </div>
                 </div>
             </div>
