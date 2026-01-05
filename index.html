@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ Pixel Dashboard ✨</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DotGothic16&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Pixel stars background decoration -->
+    <div class="stars-container" id="starsContainer"></div>
+
+    <!-- Main Dashboard -->
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="pixel-header">
+            <div class="header-content">
+                <h1 class="dashboard-title">
+                    <span class="pixel-icon">★</span>
+                    MY PIXEL DASHBOARD
+                    <span class="pixel-icon">★</span>
+                </h1>
+                <div class="pixel-clock" id="pixelClock"></div>
+            </div>
+        </header>
+
+        <!-- Widget Grid -->
+        <div class="widget-grid">
+            <!-- Task Tracker Widget -->
+            <div class="widget widget-large task-widget" data-color="pink">
+                <div class="widget-header">
+                    <span class="widget-icon">📝</span>
+                    <h2>DAILY TASKS</h2>
+                    <span class="widget-close">×</span>
+                </div>
+                <div class="widget-body">
+                    <div class="task-input-container">
+                        <input type="text" id="taskInput" class="pixel-input" placeholder="Add new task..." maxlength="50">
+                        <button id="addTaskBtn" class="pixel-btn">+</button>
+                    </div>
+                    <div class="task-stats">
+                        <span class="stat-item">
+                            <span class="stat-label">TOTAL:</span>
+                            <span id="totalTasks">0</span>
+                        </span>
+                        <span class="stat-item">
+                            <span class="stat-label">DONE:</span>
+                            <span id="completedTasks">0</span>
+                        </span>
+                    </div>
+                    <ul id="taskList" class="task-list"></ul>
+                </div>
+            </div>
+
+            <!-- Calendar Widget -->
+            <div class="widget widget-medium calendar-widget" data-color="purple">
+                <div class="widget-header">
+                    <span class="widget-icon">📅</span>
+                    <h2>CALENDAR</h2>
+                    <span class="widget-close">×</span>
+                </div>
+                <div class="widget-body">
+                    <div class="calendar-nav">
+                        <button class="pixel-btn-small" id="prevMonth">◄</button>
+                        <span id="currentMonth" class="current-month"></span>
+                        <button class="pixel-btn-small" id="nextMonth">►</button>
+                    </div>
+                    <div class="calendar-grid" id="calendarGrid"></div>
+                </div>
+            </div>
+
+            <!-- Shortcuts Widget -->
+            <div class="widget widget-medium shortcuts-widget" data-color="mint">
+                <div class="widget-header">
+                    <span class="widget-icon">🚀</span>
+                    <h2>SHORTCUTS</h2>
+                    <span class="widget-close">×</span>
+                </div>
+                <div class="widget-body">
+                    <div class="shortcuts-grid" id="shortcutsGrid"></div>
+                    <button id="addShortcutBtn" class="pixel-btn pixel-btn-full">+ ADD SHORTCUT</button>
+                </div>
+            </div>
+
+            <!-- Stats & Charts Widget -->
+            <div class="widget widget-medium stats-widget" data-color="skyblue">
+                <div class="widget-header">
+                    <span class="widget-icon">📊</span>
+                    <h2>PRODUCTIVITY</h2>
+                    <span class="widget-close">×</span>
+                </div>
+                <div class="widget-body">
+                    <div class="chart-container">
+                        <h3 class="chart-title">WEEKLY TASKS</h3>
+                        <div class="bar-chart" id="weeklyChart"></div>
+                    </div>
+                    <div class="stats-summary">
+                        <div class="stat-box">
+                            <div class="stat-number" id="streakDays">0</div>
+                            <div class="stat-text">DAY STREAK</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="tasksThisWeek">0</div>
+                            <div class="stat-text">THIS WEEK</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Email Widget -->
+            <div class="widget widget-medium email-widget" data-color="yellow">
+                <div class="widget-header">
+                    <span class="widget-icon">✉️</span>
+                    <h2>MESSAGES</h2>
+                    <span class="widget-close">×</span>
+                </div>
+                <div class="widget-body">
+                    <div class="email-input-container">
+                        <input type="text" id="emailSubject" class="pixel-input" placeholder="Subject..." maxlength="30">
+                        <input type="text" id="emailFrom" class="pixel-input" placeholder="From..." maxlength="20">
+                        <button id="addEmailBtn" class="pixel-btn">+</button>
+                    </div>
+                    <ul id="emailList" class="email-list"></ul>
+                    <div class="email-note">
+                        <small>✨ Manual entry - For display only!</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Info Widget -->
+            <div class="widget widget-small info-widget" data-color="green">
+                <div class="widget-header">
+                    <span class="widget-icon">💚</span>
+                    <h2>QUOTE</h2>
+                    <span class="widget-close">×</span>
+                </div>
+                <div class="widget-body">
+                    <div class="quote-container" id="quoteContainer">
+                        <p class="pixel-quote">"Every pixel counts!"</p>
+                    </div>
+                    <button id="newQuoteBtn" class="pixel-btn pixel-btn-full">NEW QUOTE</button>
+                </div>
+            </div>
+
+            <!-- Mini Stats Widget -->
+            <div class="widget widget-small mini-stats-widget" data-color="pink">
+                <div class="widget-header">
+                    <span class="widget-icon">⭐</span>
+                    <h2>LEVEL</h2>
+                    <span class="widget-close">×</span>
+                </div>
+                <div class="widget-body">
+                    <div class="level-display">
+                        <div class="level-number" id="userLevel">1</div>
+                        <div class="level-text">LEVEL</div>
+                    </div>
+                    <div class="xp-bar">
+                        <div class="xp-fill" id="xpFill" style="width: 0%"></div>
+                    </div>
+                    <div class="xp-text">
+                        <span id="currentXP">0</span> / <span id="maxXP">100</span> XP
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timer Widget -->
+            <div class="widget widget-small timer-widget" data-color="purple">
+                <div class="widget-header">
+                    <span class="widget-icon">⏰</span>
+                    <h2>TIMER</h2>
+                    <span class="widget-close">×</span>
+                </div>
+                <div class="widget-body">
+                    <div class="timer-display" id="timerDisplay">25:00</div>
+                    <div class="timer-controls">
+                        <button class="pixel-btn-small" id="startTimer">▶</button>
+                        <button class="pixel-btn-small" id="pauseTimer">❚❚</button>
+                        <button class="pixel-btn-small" id="resetTimer">⟲</button>
+                    </div>
+                    <div class="timer-presets">
+                        <button class="preset-btn" data-minutes="5">5</button>
+                        <button class="preset-btn" data-minutes="15">15</button>
+                        <button class="preset-btn active" data-minutes="25">25</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for adding shortcuts -->
+    <div id="shortcutModal" class="modal">
+        <div class="modal-content pixel-window">
+            <div class="modal-header">
+                <h3>ADD SHORTCUT</h3>
+                <span class="modal-close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <label class="pixel-label">NAME:</label>
+                <input type="text" id="shortcutName" class="pixel-input" placeholder="App name..." maxlength="15">
+
+                <label class="pixel-label">URL:</label>
+                <input type="text" id="shortcutUrl" class="pixel-input" placeholder="https://...">
+
+                <label class="pixel-label">EMOJI:</label>
+                <input type="text" id="shortcutEmoji" class="pixel-input" placeholder="🎮" maxlength="2">
+
+                <button id="saveShortcutBtn" class="pixel-btn pixel-btn-full">SAVE</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
