@@ -30,6 +30,10 @@ tell application "Calendar"
 					set eventTitle to summary of anEvent
 					set eventLocation to location of anEvent
 					set isAllDay to allday event of anEvent
+					set eventCalendar to name of aCalendar
+
+					-- Get calendar color
+					set calendarColor to my getCalendarColor(aCalendar)
 
 					-- Create unique key to detect duplicates (title + start + end)
 					set startKey to (year of eventStart as text) & "-" & my zeroPad(month of eventStart as integer) & "-" & my zeroPad(day of eventStart as integer) & " " & my zeroPad(hours of eventStart as integer) & ":" & my zeroPad(minutes of eventStart as integer)
@@ -43,7 +47,7 @@ tell application "Calendar"
 						set endISO to my dateToISO(eventEnd)
 
 						-- Build JSON object (as text)
-						set eventJSON to "{\"title\":\"" & my escapeJSON(eventTitle) & "\",\"start\":\"" & startISO & "\",\"end\":\"" & endISO & "\",\"location\":\"" & my escapeJSON(eventLocation) & "\",\"allDay\":" & my boolToJSON(isAllDay) & "}"
+						set eventJSON to "{\"title\":\"" & my escapeJSON(eventTitle) & "\",\"start\":\"" & startISO & "\",\"end\":\"" & endISO & "\",\"location\":\"" & my escapeJSON(eventLocation) & "\",\"allDay\":" & my boolToJSON(isAllDay) & ",\"calendar\":\"" & my escapeJSON(eventCalendar) & "\",\"color\":\"" & calendarColor & "\"}"
 
 						set end of eventsList to eventJSON
 						set end of uniqueEventKeys to eventKey
@@ -133,3 +137,29 @@ on joinList(theList, theDelimiter)
 	set AppleScript's text item delimiters to oldDelimiters
 	return theString
 end joinList
+
+-- Helper: Get calendar color as hex
+on getCalendarColor(aCalendar)
+	tell application "Calendar"
+		try
+			-- Get RGB values (0-65535 range)
+			set calColor to color of aCalendar
+			set r to (item 1 of calColor) div 256
+			set g to (item 2 of calColor) div 256
+			set b to (item 3 of calColor) div 256
+
+			-- Convert to hex
+			return "#" & my decToHex(r) & my decToHex(g) & my decToHex(b)
+		on error
+			return "#B3D9FF" -- Default skyblue color
+		end try
+	end tell
+end getCalendarColor
+
+-- Helper: Convert decimal to hex
+on decToHex(n)
+	set hexChars to "0123456789ABCDEF"
+	set high to (n div 16) + 1
+	set low to (n mod 16) + 1
+	return (character high of hexChars) & (character low of hexChars)
+end decToHex

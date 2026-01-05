@@ -10,6 +10,7 @@ let state = {
     tasks: [],
     emails: [],
     shortcuts: [],
+    aiTools: [],
     calendarEvents: [],
     lastSync: null,
     stats: {
@@ -40,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeTasks();
     initializeCalendar();
     initializeShortcuts();
+    initializeAITools();
     initializeStats();
     initializeEmail();
     initializeQuote();
@@ -96,10 +98,16 @@ function initializeClock() {
 
 function updateClock() {
     const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
+    let hours = now.getHours();
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const seconds = String(now.getSeconds()).padStart(2, '0');
-    document.getElementById('pixelClock').textContent = `${hours}:${minutes}:${seconds}`;
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+
+    hours = hours % 12;
+    hours = hours ? hours : 12; // 0 should be 12
+    const hoursStr = String(hours).padStart(2, '0');
+
+    document.getElementById('pixelClock').textContent = `${hoursStr}:${minutes}:${seconds} ${ampm}`;
 }
 
 // ========================================
@@ -319,8 +327,8 @@ function renderCalendar() {
 
     grid.innerHTML = '';
 
-    // Day headers
-    const dayHeaders = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+    // Day headers (Monday first)
+    const dayHeaders = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
     dayHeaders.forEach(day => {
         const header = document.createElement('div');
         header.className = 'calendar-day-header';
@@ -329,7 +337,10 @@ function renderCalendar() {
     });
 
     // Get first day and total days in month
-    const firstDay = new Date(state.currentYear, state.currentMonth, 1).getDay();
+    let firstDay = new Date(state.currentYear, state.currentMonth, 1).getDay();
+    // Convert Sunday (0) to 7, then subtract 1 to make Monday = 0
+    firstDay = firstDay === 0 ? 6 : firstDay - 1;
+
     const daysInMonth = new Date(state.currentYear, state.currentMonth + 1, 0).getDate();
     const prevMonthDays = new Date(state.currentYear, state.currentMonth, 0).getDate();
 
@@ -353,31 +364,45 @@ function renderCalendar() {
             day.classList.add('today');
         }
 
-        // Check if day has tasks
-        const dateStr = `${state.currentYear}-${String(state.currentMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-        const hasTasks = state.tasks.some(task => task.createdAt.startsWith(dateStr));
-        if (hasTasks) {
-            day.classList.add('has-task');
-        }
+        // Check if day has calendar events (including multi-day events)
+        const currentDate = new Date(state.currentYear, state.currentMonth, i);
+        const eventsOnDay = state.calendarEvents.filter(event => {
+            const eventStart = new Date(event.start);
+            const eventEnd = new Date(event.end);
 
-        // Check if day has calendar events
-        const hasEvents = state.calendarEvents.some(event => {
-            const eventDate = new Date(event.start);
-            return eventDate.getFullYear() === state.currentYear &&
-                   eventDate.getMonth() === state.currentMonth &&
-                   eventDate.getDate() === i;
+            // Set to start of day for comparison
+            const dayStart = new Date(currentDate);
+            dayStart.setHours(0, 0, 0, 0);
+            const dayEnd = new Date(currentDate);
+            dayEnd.setHours(23, 59, 59, 999);
+
+            // Check if event overlaps with this day
+            return eventStart <= dayEnd && eventEnd >= dayStart;
         });
-        if (hasEvents) {
-            day.classList.add('has-event');
-        }
 
-        // Add click handler to show events
-        if (hasEvents || hasTasks) {
+        if (eventsOnDay.length > 0) {
+            day.classList.add('has-event');
+
+            // Add colored dots for each event
+            const dotsContainer = document.createElement('div');
+            dotsContainer.className = 'event-dots';
+            eventsOnDay.slice(0, 3).forEach(event => {
+                const dot = document.createElement('span');
+                dot.className = 'event-color-dot';
+                dot.style.backgroundColor = event.color || '#B3D9FF';
+                dotsContainer.appendChild(dot);
+            });
+            day.appendChild(dotsContainer);
+
             day.style.cursor = 'pointer';
             day.addEventListener('click', () => showDayEvents(state.currentYear, state.currentMonth, i));
         }
 
-        day.textContent = i;
+        const dayNumber = document.createElement('span');
+        dayNumber.className = 'day-number';
+        dayNumber.textContent = i;
+        day.insertBefore(dayNumber, day.firstChild);
+
         grid.appendChild(day);
     }
 
@@ -403,12 +428,20 @@ function showDayEvents(year, month, day) {
                         'July', 'August', 'September', 'October', 'November', 'December'];
     modalDate.textContent = `${monthNames[month]} ${day}, ${year}`;
 
-    // Get events for this day
+    // Get events for this day (including multi-day events)
+    const currentDate = new Date(year, month, day);
     const dayEvents = state.calendarEvents.filter(event => {
-        const eventDate = new Date(event.start);
-        return eventDate.getFullYear() === year &&
-               eventDate.getMonth() === month &&
-               eventDate.getDate() === day;
+        const eventStart = new Date(event.start);
+        const eventEnd = new Date(event.end);
+
+        // Set to start of day for comparison
+        const dayStart = new Date(currentDate);
+        dayStart.setHours(0, 0, 0, 0);
+        const dayEnd = new Date(currentDate);
+        dayEnd.setHours(23, 59, 59, 999);
+
+        // Check if event overlaps with this day
+        return eventStart <= dayEnd && eventEnd >= dayStart;
     });
 
     // Clear and populate events list
@@ -424,13 +457,23 @@ function showDayEvents(year, month, day) {
         dayEvents.forEach(event => {
             const eventItem = document.createElement('div');
             eventItem.className = 'event-item';
+            eventItem.style.borderLeft = `4px solid ${event.color || '#B3D9FF'}`;
 
             const startDate = new Date(event.start);
             const endDate = new Date(event.end);
 
+            // Check if multi-day event
+            const isMultiDay = (endDate - startDate) > (24 * 60 * 60 * 1000);
+
             let timeStr = '';
             if (event.allDay) {
-                timeStr = 'All Day';
+                if (isMultiDay) {
+                    const startDay = startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    const endDay = endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    timeStr = `${startDay} - ${endDay}`;
+                } else {
+                    timeStr = 'All Day';
+                }
             } else {
                 const startTime = startDate.toLocaleTimeString('en-US', {
                     hour: 'numeric',
@@ -442,12 +485,19 @@ function showDayEvents(year, month, day) {
                     minute: '2-digit',
                     hour12: true
                 });
-                timeStr = `${startTime} - ${endTime}`;
+                if (isMultiDay) {
+                    const startDay = startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    const endDay = endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    timeStr = `${startDay} ${startTime} - ${endDay} ${endTime}`;
+                } else {
+                    timeStr = `${startTime} - ${endTime}`;
+                }
             }
 
             eventItem.innerHTML = `
                 <div class="event-time">${escapeHtml(timeStr)}</div>
                 <div class="event-title">${escapeHtml(event.title)}</div>
+                ${event.calendar ? `<div class="event-calendar">📆 ${escapeHtml(event.calendar)}</div>` : ''}
                 ${event.location ? `<div class="event-location">📍 ${escapeHtml(event.location)}</div>` : ''}
             `;
 
@@ -467,18 +517,16 @@ function closeEventModal() {
 // ========================================
 
 function initializeShortcuts() {
-    // Default shortcuts
-    if (state.shortcuts.length === 0) {
-        state.shortcuts = [
-            { id: 1, name: 'MAIL', url: 'https://mail.google.com', emoji: '📧' },
-            { id: 2, name: 'CALENDAR', url: 'https://calendar.google.com', emoji: '📅' },
-            { id: 3, name: 'NOTES', url: 'https://keep.google.com', emoji: '📝' },
-            { id: 4, name: 'DRIVE', url: 'https://drive.google.com', emoji: '💾' },
-            { id: 5, name: 'GITHUB', url: 'https://github.com', emoji: '🐙' },
-            { id: 6, name: 'APPLE MUSIC', url: 'https://music.apple.com', emoji: '🎵' }
-        ];
-        saveToLocalStorage();
-    }
+    // Always use default shortcuts (don't save/load from localStorage)
+    state.shortcuts = [
+        { id: 1, name: 'MAIL', url: 'mailto:', emoji: 'https://img.icons8.com/?size=100&id=7rhqrO588QcU&format=png&color=000000' },
+        { id: 2, name: 'CALENDAR', url: 'https://calendar.google.com', emoji: '📅' },
+        { id: 3, name: 'NOTES', url: 'https://keep.google.com', emoji: '📝' },
+        { id: 4, name: 'DRIVE', url: 'https://drive.google.com', emoji: 'https://img.icons8.com/?size=100&id=ya4CrqO7PgnY&format=png&color=000000' },
+        { id: 5, name: 'GITHUB', url: 'https://github.com', emoji: 'https://img.icons8.com/?size=100&id=bVGqATNwfhYq&format=png&color=000000' },
+        { id: 6, name: 'CHROME', url: 'https://www.google.com/chrome/', emoji: 'https://img.icons8.com/?size=100&id=63785&format=png&color=000000' },
+        { id: 7, name: 'MUSIC APP', url: 'musics://', emoji: 'https://img.icons8.com/?size=100&id=81TSi6Gqk0tm&format=png&color=000000' }
+    ];
 
     document.getElementById('addShortcutBtn').addEventListener('click', openShortcutModal);
     document.querySelector('.modal-close').addEventListener('click', closeShortcutModal);
@@ -544,15 +592,129 @@ function renderShortcuts() {
         item.className = 'shortcut-item';
         item.href = shortcut.url;
         item.target = '_blank';
-        item.innerHTML = `
-            <div class="shortcut-emoji">${shortcut.emoji}</div>
-            <div class="shortcut-name">${escapeHtml(shortcut.name)}</div>
-            <button class="shortcut-delete">×</button>
-        `;
+
+        // Check if emoji is a URL (image) or emoji
+        const isImageUrl = shortcut.emoji.startsWith('http://') || shortcut.emoji.startsWith('https://');
+
+        if (isImageUrl) {
+            item.innerHTML = `
+                <div class="shortcut-emoji"><img src="${escapeHtml(shortcut.emoji)}" alt="${escapeHtml(shortcut.name)}" class="ai-tool-logo"></div>
+                <div class="shortcut-name">${escapeHtml(shortcut.name)}</div>
+            `;
+        } else {
+            item.innerHTML = `
+                <div class="shortcut-emoji">${shortcut.emoji}</div>
+                <div class="shortcut-name">${escapeHtml(shortcut.name)}</div>
+            `;
+        }
+
+        grid.appendChild(item);
+    });
+}
+
+// ========================================
+// AI TOOLS
+// ========================================
+
+function initializeAITools() {
+    // Default AI tools
+    if (state.aiTools.length === 0) {
+        state.aiTools = [
+            { id: 1, name: 'CLAUDE', url: 'https://claude.ai', icon: 'https://img.icons8.com/?size=100&id=zQjzFjPpT2Ek&format=png&color=000000' },
+            { id: 2, name: 'CHATGPT', url: 'https://chatgpt.com', icon: 'https://img.icons8.com/?size=100&id=kTuxVYRKeKEY&format=png&color=000000' },
+            { id: 3, name: 'GEMINI', url: 'https://gemini.google.com', icon: 'https://img.icons8.com/?size=100&id=rnK88i9FvAFO&format=png&color=000000' },
+            { id: 4, name: 'NOTEBOOKLM', url: 'https://notebooklm.google.com', icon: 'https://img.icons8.com/?size=100&id=bcGNwF2H0QAa&format=png&color=000000' },
+            { id: 5, name: 'PERPLEXITY', url: 'https://perplexity.ai', icon: 'https://img.icons8.com/?size=100&id=kzJWN5jCDzpq&format=png&color=000000' },
+            { id: 6, name: 'COPILOT', url: 'https://copilot.microsoft.com', icon: 'https://img.icons8.com/?size=100&id=PxQoyT1s0uFh&format=png&color=000000' }
+        ];
+        saveToLocalStorage();
+    }
+
+    document.getElementById('addAIToolBtn').addEventListener('click', openAIToolModal);
+    document.querySelector('.ai-modal-close').addEventListener('click', closeAIToolModal);
+    document.getElementById('saveAIToolBtn').addEventListener('click', saveAITool);
+
+    // Close modal on outside click
+    document.getElementById('aiToolModal').addEventListener('click', (e) => {
+        if (e.target.id === 'aiToolModal') {
+            closeAIToolModal();
+        }
+    });
+
+    renderAITools();
+}
+
+function openAIToolModal() {
+    document.getElementById('aiToolModal').classList.add('active');
+    document.getElementById('aiToolName').focus();
+}
+
+function closeAIToolModal() {
+    document.getElementById('aiToolModal').classList.remove('active');
+    document.getElementById('aiToolName').value = '';
+    document.getElementById('aiToolUrl').value = '';
+    document.getElementById('aiToolIcon').value = '';
+}
+
+function saveAITool() {
+    const name = document.getElementById('aiToolName').value.trim().toUpperCase();
+    const url = document.getElementById('aiToolUrl').value.trim();
+    const icon = document.getElementById('aiToolIcon').value.trim() || '🤖';
+
+    if (name === '' || url === '') {
+        alert('Please fill in name and URL!');
+        return;
+    }
+
+    const aiTool = {
+        id: Date.now(),
+        name,
+        url,
+        icon
+    };
+
+    state.aiTools.push(aiTool);
+    saveToLocalStorage();
+    renderAITools();
+    closeAIToolModal();
+}
+
+function deleteAITool(id) {
+    state.aiTools = state.aiTools.filter(t => t.id !== id);
+    saveToLocalStorage();
+    renderAITools();
+}
+
+function renderAITools() {
+    const grid = document.getElementById('aiToolsGrid');
+    grid.innerHTML = '';
+
+    state.aiTools.forEach(tool => {
+        const item = document.createElement('a');
+        item.className = 'shortcut-item';
+        item.href = tool.url;
+        item.target = '_blank';
+
+        // Check if icon is a URL (image) or emoji
+        const isImageUrl = tool.icon.startsWith('http://') || tool.icon.startsWith('https://');
+
+        if (isImageUrl) {
+            item.innerHTML = `
+                <div class="shortcut-emoji"><img src="${escapeHtml(tool.icon)}" alt="${escapeHtml(tool.name)}" class="ai-tool-logo"></div>
+                <div class="shortcut-name">${escapeHtml(tool.name)}</div>
+                <button class="shortcut-delete">×</button>
+            `;
+        } else {
+            item.innerHTML = `
+                <div class="shortcut-emoji">${tool.icon}</div>
+                <div class="shortcut-name">${escapeHtml(tool.name)}</div>
+                <button class="shortcut-delete">×</button>
+            `;
+        }
 
         item.querySelector('.shortcut-delete').addEventListener('click', (e) => {
             e.preventDefault();
-            deleteShortcut(shortcut.id);
+            deleteAITool(tool.id);
         });
 
         grid.appendChild(item);

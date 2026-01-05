@@ -76,10 +76,6 @@
                         <button class="pixel-btn-small" id="nextMonth">►</button>
                     </div>
                     <div class="calendar-grid" id="calendarGrid"></div>
-                    <div class="calendar-legend">
-                        <span class="legend-item"><span class="legend-dot task-dot">●</span> Tasks</span>
-                        <span class="legend-item"><span class="legend-dot event-dot">●</span> Events</span>
-                    </div>
                 </div>
             </div>
 
@@ -92,7 +88,19 @@
                 </div>
                 <div class="widget-body">
                     <div class="shortcuts-grid" id="shortcutsGrid"></div>
-                    <button id="addShortcutBtn" class="pixel-btn pixel-btn-full">+ ADD SHORTCUT</button>
+                </div>
+            </div>
+
+            <!-- AI Tools Widget -->
+            <div class="widget widget-medium ai-tools-widget" data-color="purple">
+                <div class="widget-header">
+                    <span class="widget-icon">🤖</span>
+                    <h2>AI TOOLS</h2>
+                    <span class="widget-close">×</span>
+                </div>
+                <div class="widget-body">
+                    <div class="shortcuts-grid" id="aiToolsGrid"></div>
+                    <button id="addAIToolBtn" class="pixel-btn pixel-btn-full">+ ADD AI TOOL</button>
                 </div>
             </div>
 
@@ -215,8 +223,8 @@
                 <label class="pixel-label">URL:</label>
                 <input type="text" id="shortcutUrl" class="pixel-input" placeholder="https://...">
 
-                <label class="pixel-label">EMOJI:</label>
-                <input type="text" id="shortcutEmoji" class="pixel-input" placeholder="🎮" maxlength="2">
+                <label class="pixel-label">ICON (EMOJI OR IMAGE URL):</label>
+                <input type="text" id="shortcutEmoji" class="pixel-input" placeholder="🎮 or https://logo.png">
 
                 <button id="saveShortcutBtn" class="pixel-btn pixel-btn-full">SAVE</button>
             </div>
@@ -235,6 +243,28 @@
                 <div class="no-events" id="noEvents" style="display: none;">
                     <p>No events for this day!</p>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for adding AI tools -->
+    <div id="aiToolModal" class="modal">
+        <div class="modal-content pixel-window">
+            <div class="modal-header">
+                <h3>ADD AI TOOL</h3>
+                <span class="modal-close ai-modal-close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <label class="pixel-label">NAME:</label>
+                <input type="text" id="aiToolName" class="pixel-input" placeholder="AI name..." maxlength="15">
+
+                <label class="pixel-label">URL:</label>
+                <input type="text" id="aiToolUrl" class="pixel-input" placeholder="https://...">
+
+                <label class="pixel-label">ICON (EMOJI OR IMAGE URL):</label>
+                <input type="text" id="aiToolIcon" class="pixel-input" placeholder="🤖 or https://logo.png">
+
+                <button id="saveAIToolBtn" class="pixel-btn pixel-btn-full">SAVE</button>
             </div>
         </div>
     </div>

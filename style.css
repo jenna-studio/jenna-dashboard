@@ -324,6 +324,8 @@ body {
     border: 2px solid var(--bg-primary);
     background: rgba(255, 255, 255, 0.3);
     transition: all 0.2s;
+    line-height: 1;
+    padding: 0;
 }
 
 .widget-close:hover {
@@ -531,6 +533,8 @@ body {
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
+    line-height: 1;
+    padding: 0;
 }
 
 .task-delete:hover {
@@ -651,15 +655,24 @@ body {
 }
 
 .calendar-day {
-    cursor: pointer;
+    cursor: default;
     position: relative;
+    flex-direction: column;
+    padding: 2px;
 }
 
-.calendar-day:hover {
+.calendar-day.has-event {
+    cursor: pointer;
+}
+
+.calendar-day:hover.has-event {
     background: var(--pixel-purple);
-    color: var(--bg-primary);
     transform: scale(1.1);
     z-index: 1;
+}
+
+.calendar-day .day-number {
+    font-size: 12px;
 }
 
 .calendar-day.today {
@@ -673,32 +686,20 @@ body {
     opacity: 0.3;
 }
 
-.calendar-day.has-task::after {
-    content: '●';
-    position: absolute;
-    bottom: 2px;
-    right: 2px;
-    font-size: 8px;
-    color: var(--pixel-green);
+/* Event color dots */
+.event-dots {
+    display: flex;
+    gap: 2px;
+    margin-top: 2px;
+    justify-content: center;
 }
 
-.calendar-day.has-event::before {
-    content: '●';
-    position: absolute;
-    bottom: 2px;
-    left: 2px;
-    font-size: 8px;
-    color: var(--pixel-yellow);
-}
-
-.calendar-day.has-task.has-event::after {
-    right: 50%;
-    transform: translateX(50%);
-}
-
-.calendar-day.has-task.has-event::before {
-    left: 50%;
-    transform: translateX(-150%);
+.event-color-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 /* Events Modal */
@@ -733,10 +734,12 @@ body {
     margin-bottom: 5px;
 }
 
-.event-location {
+.event-location,
+.event-calendar {
     font-size: 12px;
     color: var(--text-secondary);
     opacity: 0.8;
+    margin-top: 3px;
 }
 
 .no-events {
@@ -788,6 +791,13 @@ body {
     animation: iconFloat 3s ease-in-out infinite;
 }
 
+.ai-tool-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
 @keyframes iconFloat {
     0%, 100% {
         transform: translateY(0);
@@ -820,6 +830,8 @@ body {
     cursor: pointer;
     font-size: 12px;
     font-weight: bold;
+    line-height: 1;
+    padding: 0;
 }
 
 .shortcut-item:hover .shortcut-delete {
@@ -1226,6 +1238,8 @@ body {
     border: 2px solid var(--bg-primary);
     background: rgba(255, 255, 255, 0.3);
     transition: all 0.2s;
+    line-height: 1;
+    padding: 0;
 }
 
 .modal-close:hover {
