@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>✨ Pixel Dashboard ✨</title>
+    <title>✨ Jenna's Dashboard ✨</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DotGothic16&display=swap" rel="stylesheet">
@@ -20,7 +20,7 @@
             <div class="header-content">
                 <h1 class="dashboard-title">
                     <span class="pixel-icon">★</span>
-                    MY PIXEL DASHBOARD
+                    JENNA'S DASHBOARD
                     <span class="pixel-icon">★</span>
                 </h1>
                 <div class="pixel-clock" id="pixelClock"></div>
@@ -63,12 +63,23 @@
                     <span class="widget-close">×</span>
                 </div>
                 <div class="widget-body">
+                    <div class="calendar-sync-container">
+                        <div class="sync-status" id="syncStatus">
+                            <span class="status-dot"></span>
+                            <span class="status-text" id="syncStatusText">No events synced</span>
+                        </div>
+                        <button class="pixel-btn-small" id="syncCalendarBtn" title="Run the Sync Shortcut to update events">🔄 SYNC</button>
+                    </div>
                     <div class="calendar-nav">
                         <button class="pixel-btn-small" id="prevMonth">◄</button>
                         <span id="currentMonth" class="current-month"></span>
                         <button class="pixel-btn-small" id="nextMonth">►</button>
                     </div>
                     <div class="calendar-grid" id="calendarGrid"></div>
+                    <div class="calendar-legend">
+                        <span class="legend-item"><span class="legend-dot task-dot">●</span> Tasks</span>
+                        <span class="legend-item"><span class="legend-dot event-dot">●</span> Events</span>
+                    </div>
                 </div>
             </div>
 
@@ -208,6 +219,22 @@
                 <input type="text" id="shortcutEmoji" class="pixel-input" placeholder="🎮" maxlength="2">
 
                 <button id="saveShortcutBtn" class="pixel-btn pixel-btn-full">SAVE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for calendar events -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content pixel-window">
+            <div class="modal-header">
+                <h3 id="eventModalDate">EVENTS</h3>
+                <span class="modal-close event-modal-close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="eventsList" class="events-list"></div>
+                <div class="no-events" id="noEvents" style="display: none;">
+                    <p>No events for this day!</p>
+                </div>
             </div>
         </div>
     </div>
