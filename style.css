@@ -20,11 +20,11 @@
     --pixel-yellow-dark: #FFEB8A;
 
     /* Base colors */
-    --bg-primary: #1a0f2e;
-    --bg-secondary: #442b6e9f;
-    --text-primary: #ffffff;
-    --text-secondary: #d4c5f9;
-    --border-color: #ffffff;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f0ff;
+    --text-primary: #2d1b4e;
+    --text-secondary: #6b4d9e;
+    --border-color: #d4b3ff;
     
 
     /* Pixel border width */
@@ -47,7 +47,7 @@
 
 body {
     font-family: var(--font-dot);
-    background: linear-gradient(135deg, #1a0f2e 0%, #2d1b4e 50%, #1a0f2e 100%);
+    background: linear-gradient(135deg, #C4E3FF 0%, #FFCCE6 50%, #C4E3FF 100%);
     color: var(--text-primary);
     min-height: 100vh;
     overflow-x: hidden;
@@ -60,17 +60,17 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--bg-secondary);
+    background: #ffffff;
     border: 2px solid var(--border-color);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--pixel-pink);
+    background: var(--pixel-purple);
     border: 2px solid var(--border-color);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--pixel-pink-dark);
+    background: var(--pixel-purple-dark);
 }
 
 /* ========================================
@@ -132,9 +132,10 @@ body {
 .dashboard-title {
     font-family: var(--font-pixel);
     font-size: clamp(12px, 3vw, 24px);
+    color: var(--pixel-purple);
     text-shadow:
-        3px 3px 0 var(--pixel-pink),
-        6px 6px 0 var(--pixel-purple);
+        2px 2px 0 var(--pixel-pink),
+        4px 4px 0 #9e7dd6;
     letter-spacing: 2px;
     animation: titlePulse 2s ease-in-out infinite;
 }
@@ -166,13 +167,13 @@ body {
 .pixel-clock {
     font-family: var(--font-pixel);
     font-size: clamp(10px, 2vw, 16px);
-    background: var(--bg-primary);
+    background: var(--pixel-purple);
     padding: 10px 20px;
-    border: 3px solid var(--pixel-mint);
+    border: 3px solid var(--pixel-purple-dark);
     box-shadow:
-        0 0 10px var(--pixel-mint),
-        inset 0 0 10px rgba(179, 245, 232, 0.2);
-    color: var(--pixel-mint);
+        0 0 10px var(--pixel-purple),
+        inset 0 0 10px rgba(255, 255, 255, 0.3);
+    color: #ffffff;
 }
 
 /* ========================================
@@ -288,7 +289,7 @@ body {
     align-items: center;
     gap: 10px;
     padding: 12px 15px;
-    color: var(--bg-primary);
+    color: #2d1b4e;
 }
 
 .widget-header h2 {
@@ -371,7 +372,7 @@ body {
     font-family: var(--font-pixel);
     font-size: 12px;
     background: var(--pixel-pink);
-    color: var(--bg-primary);
+    color: #2d1b4e;
     border: 3px solid var(--border-color);
     cursor: pointer;
     box-shadow:
@@ -403,7 +404,7 @@ body {
     font-family: var(--font-pixel);
     font-size: 10px;
     background: var(--pixel-purple);
-    color: var(--bg-primary);
+    color: #ffffff;
     border: 2px solid var(--border-color);
     cursor: pointer;
     box-shadow:
@@ -425,6 +426,32 @@ body {
 .pixel-btn-full {
     width: 100%;
     margin-top: 10px;
+}
+
+.nav-btn {
+    padding: 10px 16px;
+    font-family: var(--font-dot);
+    font-size: 14px;
+    font-weight: bold;
+    background: var(--pixel-mint);
+    color: var(--bg-primary);
+    border: 3px solid var(--border-color);
+    cursor: pointer;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.nav-btn:hover {
+    background: var(--pixel-mint-dark);
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+.nav-btn:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0px 0px 0 rgba(0, 0, 0, 0.3);
 }
 
 /* ========================================
@@ -650,7 +677,7 @@ body {
     font-family: var(--font-pixel);
     font-size: 8px;
     background: var(--pixel-purple);
-    color: var(--bg-primary);
+    color: #ffffff;
     border: 2px solid var(--pixel-purple-dark);
 }
 
@@ -724,7 +751,7 @@ body {
 .event-time {
     font-family: var(--font-pixel);
     font-size: 10px;
-    color: var(--pixel-yellow);
+    color: #9e7dd6;
     margin-bottom: 5px;
 }
 
@@ -732,13 +759,13 @@ body {
     font-size: 14px;
     font-weight: bold;
     margin-bottom: 5px;
+    color: #2d1b4e;
 }
 
 .event-location,
 .event-calendar {
     font-size: 12px;
-    color: var(--text-secondary);
-    opacity: 0.8;
+    color: #6b4d9e;
     margin-top: 3px;
 }
 
@@ -910,7 +937,7 @@ body {
     transform: translateX(-50%);
     font-family: var(--font-pixel);
     font-size: 8px;
-    color: var(--pixel-yellow);
+    color: #d4a017;
 }
 
 .bar-label {
@@ -935,7 +962,7 @@ body {
 .stat-number {
     font-family: var(--font-pixel);
     font-size: 24px;
-    color: var(--pixel-yellow);
+    color: #d4a017;
     margin-bottom: 5px;
     text-shadow: 2px 2px 0 var(--pixel-skyblue);
 }
@@ -1078,7 +1105,7 @@ body {
 .hsk-character {
     font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", "Noto Sans SC", "STHeiti", sans-serif;
     font-size: 48px;
-    color: var(--pixel-green);
+    color: #4a7c59;
     font-weight: 600;
     text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
     letter-spacing: 2px;
@@ -1087,15 +1114,14 @@ body {
 .hsk-pinyin {
     font-family: var(--font-dot);
     font-size: 18px;
-    color: var(--text-secondary);
-    font-style: italic;
+    color: #6b4d9e;
     letter-spacing: 1px;
 }
 
 .hsk-meaning {
     font-family: 'DotGothic16', monospace;
     font-size: 13px;
-    color: var(--pixel-green);
+    color: #2d1b4e;
     text-align: center;
     border-top: 2px solid var(--pixel-green);
     padding-top: 8px;
@@ -1217,7 +1243,7 @@ body {
 .preset-btn:hover,
 .preset-btn.active {
     background: var(--pixel-purple);
-    color: var(--bg-primary);
+    color: #ffffff;
     border-color: var(--pixel-purple-dark);
     box-shadow: 0 0 10px var(--pixel-purple);
 }
@@ -1278,7 +1304,7 @@ body {
 
 .modal-header {
     background: var(--pixel-mint);
-    color: var(--bg-primary);
+    color: #000000;
     padding: 15px 20px;
     display: flex;
     justify-content: space-between;
@@ -1433,9 +1459,9 @@ body {
     position: absolute;
     width: 4px;
     height: 4px;
-    background: white;
+    background: var(--pixel-purple);
     box-shadow:
-        0 0 4px white,
+        0 0 4px var(--pixel-purple),
         0 0 8px var(--pixel-pink);
     animation: starTwinkle 2s ease-in-out infinite;
 }

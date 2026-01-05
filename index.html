@@ -105,6 +105,19 @@
                 </div>
             </div>
 
+            <!-- Dev Tools Widget -->
+            <div class="widget widget-medium dev-tools-widget" data-color="green">
+                <div class="widget-header">
+                    <span class="widget-icon">⚙️</span>
+                    <h2>DEV TOOLS</h2>
+                    <span class="widget-close">×</span>
+                </div>
+                <div class="widget-body">
+                    <div class="shortcuts-grid" id="devToolsGrid"></div>
+                    <button id="addDevToolBtn" class="pixel-btn pixel-btn-full">+ ADD DEV TOOL</button>
+                </div>
+            </div>
+
             <!-- Stats & Charts Widget -->
             <div class="widget widget-medium stats-widget" data-color="skyblue">
                 <div class="widget-header">
@@ -265,6 +278,28 @@
                 <input type="text" id="aiToolIcon" class="pixel-input" placeholder="🤖 or https://logo.png">
 
                 <button id="saveAIToolBtn" class="pixel-btn pixel-btn-full">SAVE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for adding dev tools -->
+    <div id="devToolModal" class="modal">
+        <div class="modal-content pixel-window">
+            <div class="modal-header">
+                <h3>ADD DEV TOOL</h3>
+                <span class="modal-close dev-modal-close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <label class="pixel-label">NAME:</label>
+                <input type="text" id="devToolName" class="pixel-input" placeholder="Tool name..." maxlength="15">
+
+                <label class="pixel-label">URL:</label>
+                <input type="text" id="devToolUrl" class="pixel-input" placeholder="https:// or vscode:// or shortcuts://...">
+
+                <label class="pixel-label">ICON (EMOJI OR IMAGE URL):</label>
+                <input type="text" id="devToolIcon" class="pixel-input" placeholder="⚙️ or https://logo.png">
+
+                <button id="saveDevToolBtn" class="pixel-btn pixel-btn-full">SAVE</button>
             </div>
         </div>
     </div>

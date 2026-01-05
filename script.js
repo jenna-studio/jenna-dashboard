@@ -11,6 +11,7 @@ let state = {
     notes: [],
     shortcuts: [],
     aiTools: [],
+    devTools: [],
     calendarEvents: [],
     lastSync: null,
     stats: {
@@ -42,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCalendar();
     initializeShortcuts();
     initializeAITools();
+    initializeDevTools();
     initializeStats();
     initializeNotes();
     initializeHSK();
@@ -63,7 +65,9 @@ function loadFromLocalStorage() {
     if (saved) {
         const loaded = JSON.parse(saved);
         state = { ...state, ...loaded };
-        // Reset timer state
+        // Reset timer state to default 30:00
+        state.timer.minutes = 30;
+        state.timer.seconds = 0;
         state.timer.isRunning = false;
         state.timer.interval = null;
     }
@@ -146,6 +150,9 @@ function addTask() {
     state.tasks.push(task);
     input.value = '';
 
+    // Play sound effect
+    playSound('taskAdd');
+
     // Add XP for creating a task
     addXP(5);
 
@@ -165,6 +172,7 @@ function toggleTask(id) {
 
         // Add XP for completing a task
         if (task.completed) {
+            playSound('taskComplete');
             addXP(10);
             showCompletionEffect();
         }
@@ -282,6 +290,11 @@ function initializeCalendar() {
     // Load events from file
     loadCalendarEvents();
     renderCalendar();
+
+    // Auto-fetch calendar events every 5 minutes
+    setInterval(() => {
+        loadCalendarEvents();
+    }, 5 * 60 * 1000); // 5 minutes in milliseconds
 }
 
 async function loadCalendarEvents() {
@@ -527,7 +540,8 @@ function initializeShortcuts() {
             { id: 5, name: 'GITHUB', url: 'https://github.com', emoji: 'https://img.icons8.com/?size=100&id=bVGqATNwfhYq&format=png&color=000000' },
             { id: 6, name: 'CHROME', url: 'https://www.google.com/chrome/', emoji: 'https://img.icons8.com/?size=100&id=63785&format=png&color=000000' },
             { id: 7, name: 'OBSIDIAN', url: 'obsidian://', emoji: 'https://img.icons8.com/?size=100&id=y3bYGWmo5JdM&format=png&color=000000' },
-            { id: 8, name: 'MUSIC', url: 'shortcuts://run-shortcut?name=play%20playlist', emoji: 'https://img.icons8.com/?size=100&id=81TSi6Gqk0tm&format=png&color=000000' }
+            { id: 8, name: 'MUSIC', url: 'shortcuts://run-shortcut?name=play%20playlist', emoji: 'https://img.icons8.com/?size=100&id=81TSi6Gqk0tm&format=png&color=000000' },
+            { id: 9, name: 'NOTION', url: 'notion://', emoji: 'https://img.icons8.com/?size=100&id=lVWXUlZQdwgv&format=png&color=000000' }
         ];
         saveToLocalStorage();
     }
@@ -726,6 +740,117 @@ function renderAITools() {
         item.querySelector('.shortcut-delete').addEventListener('click', (e) => {
             e.preventDefault();
             deleteAITool(tool.id);
+        });
+
+        grid.appendChild(item);
+    });
+}
+
+// ========================================
+// DEV TOOLS
+// ========================================
+
+function initializeDevTools() {
+    // Default dev tools - always loaded
+    if (state.devTools.length === 0) {
+        state.devTools = [
+            { id: 1, name: 'VS CODE', url: 'vscode://', icon: 'https://img.icons8.com/?size=100&id=9OGIyU8hrxW5&format=png&color=000000' },
+            { id: 2, name: 'SCRIPT EDITOR', url: 'shortcuts://run-shortcut?name=Open%20Script%20Editor', icon: 'https://images.icon-icons.com/3053/PNG/512/script_editor_macos_bigsur_icon_189763.png' },
+            { id: 3, name: 'MONACO', url: 'https://jenna-studio.github.io/monaco-editor-web/', icon: 'https://img.icons8.com/?size=100&id=QsO1qiXCL8H2&format=png&color=000000' },
+            { id: 4, name: 'SUBLIME', url: 'shortcuts://run-shortcut?name=Open%20Sublime%20Text', icon: 'https://img.icons8.com/?size=100&id=6RHskkZGRABM&format=png&color=000000' },
+            { id: 5, name: 'TERMINAL', url: 'shortcuts://run-shortcut?name=Open%20Terminal', icon: 'https://img.icons8.com/?size=100&id=19292&format=png&color=000000' },
+            { id: 6, name: 'SOURCETREE', url: 'shortcuts://run-shortcut?name=Open%20Sourcetree', icon: 'https://img.icons8.com/?size=100&id=F8p20Vd88Bus&format=png&color=000000' }
+        ];
+        saveToLocalStorage();
+    }
+
+    // Event listeners
+    document.getElementById('addDevToolBtn').addEventListener('click', openDevToolModal);
+    document.querySelector('.dev-modal-close').addEventListener('click', closeDevToolModal);
+    document.getElementById('saveDevToolBtn').addEventListener('click', saveDevTool);
+
+    // Close modal on outside click
+    document.getElementById('devToolModal').addEventListener('click', (e) => {
+        if (e.target.id === 'devToolModal') {
+            closeDevToolModal();
+        }
+    });
+
+    renderDevTools();
+}
+
+function openDevToolModal() {
+    document.getElementById('devToolModal').classList.add('active');
+    document.getElementById('devToolName').focus();
+}
+
+function closeDevToolModal() {
+    document.getElementById('devToolModal').classList.remove('active');
+    document.getElementById('devToolName').value = '';
+    document.getElementById('devToolUrl').value = '';
+    document.getElementById('devToolIcon').value = '';
+}
+
+function saveDevTool() {
+    const name = document.getElementById('devToolName').value.trim();
+    const url = document.getElementById('devToolUrl').value.trim();
+    const icon = document.getElementById('devToolIcon').value.trim();
+
+    if (!name || !url) {
+        alert('Please fill in name and URL');
+        return;
+    }
+
+    const newTool = {
+        id: Date.now(),
+        name: name.toUpperCase(),
+        url: url,
+        icon: icon || '⚙️'
+    };
+
+    state.devTools.push(newTool);
+    saveToLocalStorage();
+    renderDevTools();
+    closeDevToolModal();
+}
+
+function deleteDevTool(id) {
+    state.devTools = state.devTools.filter(tool => tool.id !== id);
+    saveToLocalStorage();
+    renderDevTools();
+}
+
+function renderDevTools() {
+    const grid = document.getElementById('devToolsGrid');
+    grid.innerHTML = '';
+
+    state.devTools.forEach(tool => {
+        const item = document.createElement('a');
+        item.className = 'shortcut-item';
+        item.href = tool.url;
+        item.target = '_blank';
+
+        // Check if icon is a URL (image) or emoji
+        const isImageUrl = tool.icon.startsWith('http://') || tool.icon.startsWith('https://');
+
+        if (isImageUrl) {
+            item.innerHTML = `
+                <div class="shortcut-emoji"><img src="${escapeHtml(tool.icon)}" alt="${escapeHtml(tool.name)}" class="ai-tool-logo"></div>
+                <div class="shortcut-name">${escapeHtml(tool.name)}</div>
+                <button class="shortcut-delete">×</button>
+            `;
+        } else {
+            item.innerHTML = `
+                <div class="shortcut-emoji">${tool.icon}</div>
+                <div class="shortcut-name">${escapeHtml(tool.name)}</div>
+                <button class="shortcut-delete">×</button>
+            `;
+        }
+
+        // Add delete button event listener
+        item.querySelector('.shortcut-delete').addEventListener('click', (e) => {
+            e.preventDefault();
+            deleteDevTool(tool.id);
         });
 
         grid.appendChild(item);
@@ -1051,6 +1176,9 @@ function updateLevelDisplay() {
 }
 
 function showLevelUpEffect() {
+    // Play triumphant sound
+    playSound('levelUp');
+
     const effect = document.createElement('div');
     effect.textContent = '⭐ LEVEL UP! ⭐';
     effect.style.cssText = `
@@ -1130,6 +1258,7 @@ function startTimer() {
                 if (state.timer.minutes === 0) {
                     // Timer finished
                     pauseTimer();
+                    playSound('timerComplete');
                     showTimerCompleteEffect();
                     addXP(25);
                     return;
@@ -1281,6 +1410,85 @@ function activateRainbowMode() {
     setTimeout(() => {
         document.body.style.animation = '';
     }, 10000);
+}
+
+// ========================================
+// SOUND EFFECTS
+// ========================================
+
+// Audio Context for sound effects
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+function playSound(type) {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    const now = audioContext.currentTime;
+
+    switch(type) {
+        case 'levelUp':
+            // Triumphant ascending arpeggio
+            [261.63, 329.63, 392.00, 523.25].forEach((freq, i) => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.frequency.value = freq;
+                osc.type = 'square';
+                gain.gain.setValueAtTime(0.3, now + i * 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.1 + 0.3);
+                osc.start(now + i * 0.1);
+                osc.stop(now + i * 0.1 + 0.3);
+            });
+            return;
+
+        case 'taskComplete':
+            // Pleasant "ding" sound
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            gainNode.gain.setValueAtTime(0.3, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+            oscillator.start(now);
+            oscillator.stop(now + 0.3);
+            break;
+
+        case 'timerComplete':
+            // Victory chime - two-tone
+            oscillator.frequency.value = 523.25; // C
+            oscillator.type = 'triangle';
+            gainNode.gain.setValueAtTime(0.2, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+            oscillator.start(now);
+            oscillator.stop(now + 0.4);
+
+            // Second tone
+            setTimeout(() => {
+                const osc2 = audioContext.createOscillator();
+                const gain2 = audioContext.createGain();
+                osc2.connect(gain2);
+                gain2.connect(audioContext.destination);
+                osc2.frequency.value = 659.25; // E
+                osc2.type = 'triangle';
+                gain2.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6);
+                osc2.start();
+                osc2.stop(audioContext.currentTime + 0.6);
+            }, 200);
+            break;
+
+        case 'taskAdd':
+            // Soft click sound
+            oscillator.frequency.value = 400;
+            oscillator.type = 'square';
+            gainNode.gain.setValueAtTime(0.1, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+            oscillator.start(now);
+            oscillator.stop(now + 0.1);
+            break;
+    }
 }
 
 // ========================================
