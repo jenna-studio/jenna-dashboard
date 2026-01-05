@@ -535,13 +535,13 @@ function initializeShortcuts() {
         state.shortcuts = [
             { id: 1, name: 'MAIL', url: 'mailto:', emoji: 'https://img.icons8.com/?size=100&id=7rhqrO588QcU&format=png&color=000000' },
             { id: 2, name: 'CALENDAR', url: 'https://calendar.google.com', emoji: '📅' },
-            { id: 3, name: 'NOTES', url: 'https://keep.google.com', emoji: '📝' },
+            { id: 3, name: 'NOTES', url: 'shortcuts://run-shortcut?name=Open%20Notes', emoji: 'https://purepng.com/public/uploads/large/purepng.com-notes-iconsymbolsiconsapple-iosiosios-8-iconsios-8-721522596090jwgta.png' },
             { id: 4, name: 'DRIVE', url: 'https://drive.google.com', emoji: 'https://img.icons8.com/?size=100&id=ya4CrqO7PgnY&format=png&color=000000' },
-            { id: 5, name: 'GITHUB', url: 'https://github.com', emoji: 'https://img.icons8.com/?size=100&id=bVGqATNwfhYq&format=png&color=000000' },
+            { id: 5, name: 'GITHUB', url: 'https://github.com', emoji: 'https://images.icon-icons.com/3685/PNG/512/github_logo_icon_229278.png' },
             { id: 6, name: 'CHROME', url: 'https://www.google.com/chrome/', emoji: 'https://img.icons8.com/?size=100&id=63785&format=png&color=000000' },
-            { id: 7, name: 'OBSIDIAN', url: 'obsidian://', emoji: 'https://img.icons8.com/?size=100&id=y3bYGWmo5JdM&format=png&color=000000' },
+            { id: 7, name: 'OBSIDIAN', url: 'obsidian://', emoji: 'https://substackcdn.com/image/fetch/f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F59cec3b1-8ac3-4ca6-8a64-23ec20d95f23_512x512.png' },
             { id: 8, name: 'MUSIC', url: 'shortcuts://run-shortcut?name=play%20playlist', emoji: 'https://img.icons8.com/?size=100&id=81TSi6Gqk0tm&format=png&color=000000' },
-            { id: 9, name: 'NOTION', url: 'notion://', emoji: 'https://img.icons8.com/?size=100&id=lVWXUlZQdwgv&format=png&color=000000' }
+            { id: 9, name: 'NOTION', url: 'notion://', emoji: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Notion-logo.svg/2048px-Notion-logo.svg.png' }
         ];
         saveToLocalStorage();
     }
@@ -646,10 +646,10 @@ function initializeAITools() {
     if (state.aiTools.length === 0) {
         state.aiTools = [
             { id: 1, name: 'CLAUDE', url: 'https://claude.ai', icon: 'https://img.icons8.com/?size=100&id=zQjzFjPpT2Ek&format=png&color=000000' },
-            { id: 2, name: 'CHATGPT', url: 'https://chatgpt.com', icon: 'https://img.icons8.com/?size=100&id=kTuxVYRKeKEY&format=png&color=000000' },
+            { id: 2, name: 'CHATGPT', url: 'https://chatgpt.com', icon: 'https://img.icons8.com/?size=100&id=FBO05Dys9QCg&format=png&color=000000' },
             { id: 3, name: 'GEMINI', url: 'https://gemini.google.com', icon: 'https://img.icons8.com/?size=100&id=rnK88i9FvAFO&format=png&color=000000' },
-            { id: 4, name: 'NOTEBOOKLM', url: 'https://notebooklm.google.com', icon: 'https://img.icons8.com/?size=100&id=bcGNwF2H0QAa&format=png&color=000000' },
-            { id: 5, name: 'PERPLEXITY', url: 'https://perplexity.ai', icon: 'https://img.icons8.com/?size=100&id=kzJWN5jCDzpq&format=png&color=000000' },
+            { id: 4, name: 'NOTEBOOKLM', url: 'https://notebooklm.google.com', icon: 'https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/light/notebooklm.png' },
+            { id: 5, name: 'PERPLEXITY', url: 'https://perplexity.ai', icon: 'https://assets.streamlinehq.com/image/private/w_300,h_300,ar_1/f_auto/v1/icons/logos/perplexity-kcjtmnt09fjb1qgfxcdbd.png/perplexity-e6a4e1t06hd6dhczot580o.png?_a=DATAg1AAZAA0' },
             { id: 6, name: 'COPILOT', url: 'https://copilot.microsoft.com', icon: 'https://img.icons8.com/?size=100&id=PxQoyT1s0uFh&format=png&color=000000' }
         ];
         saveToLocalStorage();

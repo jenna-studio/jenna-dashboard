@@ -1,6 +1,13 @@
 # Personal calendar data
 calendar-events.json
 
+# macOS app bundle and launcher files
+Jenna's Dashboard.app/
+open-dashboard.scpt
+open-dashboard.command
+dashboard-app.scpt
+create-app.sh
+
 # macOS system files
 .DS_Store
 .AppleDouble
