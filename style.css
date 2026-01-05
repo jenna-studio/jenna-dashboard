@@ -880,7 +880,7 @@ body {
 .chart-title {
     font-family: var(--font-pixel);
     font-size: 10px;
-    color: var(--pixel-skyblue);
+    color: #2d5a7b;
     margin-bottom: 15px;
     text-align: center;
 }
@@ -906,12 +906,13 @@ body {
 
 .bar {
     width: 100%;
-    background: var(--pixel-skyblue);
-    border: 2px solid var(--border-color);
+    background: linear-gradient(to top, #5a9bd4, #b3d9ff);
+    border: 3px solid #2d5a7b;
     transition: all 0.3s ease;
     position: relative;
-    box-shadow: 0 0 10px rgba(179, 217, 255, 0.3);
+    box-shadow: 0 0 15px rgba(90, 155, 212, 0.4);
     animation: barGrow 0.5s ease-out backwards;
+    min-height: 5px;
 }
 
 @keyframes barGrow {
@@ -926,24 +927,27 @@ body {
 }
 
 .bar:hover {
-    background: var(--pixel-skyblue-dark);
-    box-shadow: 0 0 20px rgba(179, 217, 255, 0.6);
+    background: linear-gradient(to top, #4a7c9e, #5a9bd4);
+    box-shadow: 0 0 25px rgba(90, 155, 212, 0.7);
+    transform: scale(1.05);
 }
 
 .bar-value {
     position: absolute;
-    top: -20px;
+    top: -25px;
     left: 50%;
     transform: translateX(-50%);
     font-family: var(--font-pixel);
-    font-size: 8px;
-    color: #d4a017;
+    font-size: 11px;
+    color: #2d5a7b;
+    font-weight: bold;
 }
 
 .bar-label {
     font-family: var(--font-pixel);
-    font-size: 8px;
-    color: var(--text-secondary);
+    font-size: 9px;
+    color: #2d5a7b;
+    font-weight: bold;
 }
 
 .stats-summary {
@@ -1044,7 +1048,7 @@ body {
 .note-title {
     font-weight: bold;
     font-size: 14px;
-    color: var(--pixel-yellow);
+    color: #d4a017;
 }
 
 .note-content {
