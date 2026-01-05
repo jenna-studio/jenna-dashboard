@@ -652,7 +652,7 @@ body {
 .current-month {
     font-family: var(--font-pixel);
     font-size: 12px;
-    color: var(--pixel-purple);
+    color: var(--pixel-purple-dark);
 }
 
 .calendar-grid {

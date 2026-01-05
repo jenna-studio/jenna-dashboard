@@ -141,8 +141,15 @@
             // Get current state
             let state = JSON.parse(localStorage.getItem('pixelDashboard') || '{}');
 
-            // Reset only AI tools
-            state.aiTools = [];
+            // Reset AI tools to defaults
+            state.aiTools = [
+                { id: 1, name: 'CLAUDE', url: 'https://claude.ai', icon: 'https://img.icons8.com/?size=100&id=zQjzFjPpT2Ek&format=png&color=000000' },
+                { id: 2, name: 'CHATGPT', url: 'https://chatgpt.com', icon: 'https://img.icons8.com/?size=100&id=FBO05Dys9QCg&format=png&color=000000' },
+                { id: 3, name: 'GEMINI', url: 'https://gemini.google.com', icon: 'https://img.icons8.com/?size=100&id=rnK88i9FvAFO&format=png&color=000000' },
+                { id: 4, name: 'NOTEBOOKLM', url: 'https://notebooklm.google.com', icon: 'https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/light/notebooklm.png' },
+                { id: 5, name: 'PERPLEXITY', url: 'https://perplexity.ai', icon: 'https://assets.streamlinehq.com/image/private/w_300,h_300,ar_1/f_auto/v1/icons/logos/perplexity-kcjtmnt09fjb1qgfxcdbd.png/perplexity-e6a4e1t06hd6dhczot580o.png?_a=DATAg1AAZAA0' },
+                { id: 6, name: 'COPILOT', url: 'https://copilot.microsoft.com', icon: 'https://img.icons8.com/?size=100&id=PxQoyT1s0uFh&format=png&color=000000' }
+            ];
 
             // Save back
             localStorage.setItem('pixelDashboard', JSON.stringify(state));

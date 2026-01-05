@@ -184,8 +184,18 @@
             // Get current state
             let state = JSON.parse(localStorage.getItem('pixelDashboard') || '{}');
 
-            // Reset only shortcuts
-            state.shortcuts = [];
+            // Reset shortcuts to defaults
+            state.shortcuts = [
+                { id: 1, name: 'MAIL', url: 'mailto:', emoji: 'https://img.icons8.com/?size=100&id=7rhqrO588QcU&format=png&color=000000' },
+                { id: 2, name: 'CALENDAR', url: 'https://calendar.google.com', emoji: '📅' },
+                { id: 3, name: 'NOTES', url: 'shortcuts://run-shortcut?name=Open%20Notes', emoji: 'https://purepng.com/public/uploads/large/purepng.com-notes-iconsymbolsiconsapple-iosiosios-8-iconsios-8-721522596090jwgta.png' },
+                { id: 4, name: 'DRIVE', url: 'https://drive.google.com', emoji: 'https://img.icons8.com/?size=100&id=ya4CrqO7PgnY&format=png&color=000000' },
+                { id: 5, name: 'GITHUB', url: 'https://github.com', emoji: 'https://images.icon-icons.com/3685/PNG/512/github_logo_icon_229278.png' },
+                { id: 6, name: 'CHROME', url: 'https://www.google.com/chrome/', emoji: 'https://img.icons8.com/?size=100&id=63785&format=png&color=000000' },
+                { id: 7, name: 'OBSIDIAN', url: 'obsidian://', emoji: 'https://substackcdn.com/image/fetch/f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F59cec3b1-8ac3-4ca6-8a64-23ec20d95f23_512x512.png' },
+                { id: 8, name: 'MUSIC', url: 'shortcuts://run-shortcut?name=play%20playlist', emoji: 'https://img.icons8.com/?size=100&id=81TSi6Gqk0tm&format=png&color=000000' },
+                { id: 9, name: 'NOTION', url: 'notion://', emoji: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Notion-logo.svg/2048px-Notion-logo.svg.png' }
+            ];
 
             // Save back
             localStorage.setItem('pixelDashboard', JSON.stringify(state));
