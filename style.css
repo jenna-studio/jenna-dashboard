@@ -468,6 +468,10 @@ body {
     flex: 1;
 }
 
+#taskInput {
+    font-family: 'S-Core Dream', 'Noto Sans KR', sans-serif;
+}
+
 .task-input-container .pixel-btn {
     width: 50px;
     padding: 12px;
@@ -546,6 +550,8 @@ body {
     flex: 1;
     font-size: 14px;
     word-break: break-word;
+    font-family: 'S-Core Dream', 'Noto Sans KR', sans-serif;
+    font-weight: 500;
 }
 
 .task-delete {
@@ -640,6 +646,40 @@ body {
 
 .legend-dot.event-dot {
     color: var(--pixel-yellow);
+}
+
+#todayBtn {
+    background: #FD9FD0;
+    border-color: var(--pixel-pink-dark);
+}
+
+#todayBtn:hover {
+    background: #ff69b4;
+}
+
+.today-date {
+    font-family: var(--font-pixel);
+    font-size: 10px;
+    color: #ff69b4;
+    padding: 0 8px;
+}
+
+#syncCalendarBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #FD9FD0;
+    border-color: var(--pixel-pink-dark);
+}
+
+#syncCalendarBtn:hover {
+    background: #ff69b4;
+}
+
+#syncCalendarBtn svg {
+    width: 14px;
+    height: 14px;
+    stroke-width: 2.5;
 }
 
 .calendar-nav {

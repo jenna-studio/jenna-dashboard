@@ -12,6 +12,7 @@ let state = {
     shortcuts: [],
     aiTools: [],
     devTools: [],
+    universityLinks: [],
     calendarEvents: [],
     lastSync: null,
     stats: {
@@ -44,12 +45,18 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeShortcuts();
     initializeAITools();
     initializeDevTools();
+    initializeUniversity();
     initializeStats();
     initializeNotes();
     initializeHSK();
     initializeLevel();
     initializeTimer();
     initializeWidgetControls();
+
+    // Initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
 });
 
 // ========================================
@@ -70,6 +77,9 @@ function loadFromLocalStorage() {
         state.timer.seconds = 0;
         state.timer.isRunning = false;
         state.timer.interval = null;
+        // Always reset calendar to current month
+        state.currentMonth = new Date().getMonth();
+        state.currentYear = new Date().getFullYear();
     }
 }
 
@@ -258,6 +268,9 @@ document.head.appendChild(style);
 // ========================================
 
 function initializeCalendar() {
+    // Update today's date display
+    updateTodayDate();
+
     document.getElementById('prevMonth').addEventListener('click', () => {
         state.currentMonth--;
         if (state.currentMonth < 0) {
@@ -276,8 +289,16 @@ function initializeCalendar() {
         renderCalendar();
     });
 
+    // Today button
+    document.getElementById('todayBtn').addEventListener('click', () => {
+        const now = new Date();
+        state.currentMonth = now.getMonth();
+        state.currentYear = now.getFullYear();
+        renderCalendar();
+    });
+
     // Sync calendar button
-    document.getElementById('syncCalendarBtn').addEventListener('click', loadCalendarEvents);
+    document.getElementById('syncCalendarBtn').addEventListener('click', syncCalendar);
 
     // Event modal close
     document.querySelector('.event-modal-close').addEventListener('click', closeEventModal);
@@ -297,6 +318,16 @@ function initializeCalendar() {
     }, 5 * 60 * 1000); // 5 minutes in milliseconds
 }
 
+function syncCalendar() {
+    // Run the sync script via shortcuts
+    window.location.href = 'shortcuts://run-shortcut?name=Sync%20Calendar';
+
+    // Wait 3 seconds then reload the events
+    setTimeout(() => {
+        loadCalendarEvents();
+    }, 3000);
+}
+
 async function loadCalendarEvents() {
     try {
         const response = await fetch('calendar-events.json');
@@ -305,29 +336,23 @@ async function loadCalendarEvents() {
             state.lastSync = new Date().toISOString();
 
             // Update UI
-            updateSyncStatus(true, state.calendarEvents.length);
             renderCalendar();
 
             console.log(`Loaded ${state.calendarEvents.length} calendar events`);
-        } else {
-            updateSyncStatus(false, 0);
         }
     } catch (error) {
         console.log('Calendar events file not found. Run sync-calendar.sh to sync events.');
-        updateSyncStatus(false, 0);
     }
 }
 
-function updateSyncStatus(synced, eventCount) {
-    const statusEl = document.getElementById('syncStatus');
-    const statusTextEl = document.getElementById('syncStatusText');
-
-    if (synced) {
-        statusEl.classList.add('synced');
-        statusTextEl.textContent = `${eventCount} events synced`;
-    } else {
-        statusEl.classList.remove('synced');
-        statusTextEl.textContent = 'No events synced';
+function updateTodayDate() {
+    const now = new Date();
+    const year = String(now.getFullYear()).slice(-2); // Get last 2 digits
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const todayDateEl = document.getElementById('todayDate');
+    if (todayDateEl) {
+        todayDateEl.textContent = `${year}.${month}.${day}`;
     }
 }
 
@@ -851,6 +876,114 @@ function renderDevTools() {
         item.querySelector('.shortcut-delete').addEventListener('click', (e) => {
             e.preventDefault();
             deleteDevTool(tool.id);
+        });
+
+        grid.appendChild(item);
+    });
+}
+
+// ========================================
+// UNIVERSITY
+// ========================================
+
+function initializeUniversity() {
+    // Default university links
+    if (state.universityLinks.length === 0) {
+        state.universityLinks = [
+            { id: 1, name: 'PORTAL', url: 'https://portal.kookmin.ac.kr', icon: '🎓' },
+            { id: 2, name: 'E-CLASS', url: 'https://eclass.kookmin.ac.kr', icon: '📚' },
+            { id: 3, name: 'LIBRARY', url: 'https://lib.kookmin.ac.kr', icon: '📖' }
+        ];
+        saveToLocalStorage();
+    }
+
+    // Event listeners
+    document.getElementById('addUniversityBtn').addEventListener('click', openUniversityModal);
+    document.querySelector('.university-modal-close').addEventListener('click', closeUniversityModal);
+    document.getElementById('saveUniversityBtn').addEventListener('click', saveUniversity);
+
+    // Close modal on outside click
+    document.getElementById('universityModal').addEventListener('click', (e) => {
+        if (e.target.id === 'universityModal') {
+            closeUniversityModal();
+        }
+    });
+
+    renderUniversity();
+}
+
+function openUniversityModal() {
+    document.getElementById('universityModal').classList.add('active');
+    document.getElementById('universityName').focus();
+}
+
+function closeUniversityModal() {
+    document.getElementById('universityModal').classList.remove('active');
+    document.getElementById('universityName').value = '';
+    document.getElementById('universityUrl').value = '';
+    document.getElementById('universityIcon').value = '';
+}
+
+function saveUniversity() {
+    const name = document.getElementById('universityName').value.trim();
+    const url = document.getElementById('universityUrl').value.trim();
+    const icon = document.getElementById('universityIcon').value.trim();
+
+    if (!name || !url) {
+        alert('Please fill in name and URL');
+        return;
+    }
+
+    const newLink = {
+        id: Date.now(),
+        name: name.toUpperCase(),
+        url: url,
+        icon: icon || '🎓'
+    };
+
+    state.universityLinks.push(newLink);
+    saveToLocalStorage();
+    renderUniversity();
+    closeUniversityModal();
+}
+
+function deleteUniversity(id) {
+    state.universityLinks = state.universityLinks.filter(link => link.id !== id);
+    saveToLocalStorage();
+    renderUniversity();
+}
+
+function renderUniversity() {
+    const grid = document.getElementById('universityGrid');
+    grid.innerHTML = '';
+
+    state.universityLinks.forEach(link => {
+        const item = document.createElement('a');
+        item.className = 'shortcut-item';
+        item.href = link.url;
+        item.target = '_blank';
+
+        // Check if icon is a URL (image) or emoji
+        const isImageUrl = link.icon.startsWith('http://') || link.icon.startsWith('https://');
+
+        if (isImageUrl) {
+            item.innerHTML = `
+                <div class="shortcut-emoji"><img src="${escapeHtml(link.icon)}" alt="${escapeHtml(link.name)}" class="ai-tool-logo"></div>
+                <div class="shortcut-name">${escapeHtml(link.name)}</div>
+                <button class="shortcut-delete">×</button>
+            `;
+        } else {
+            item.innerHTML = `
+                <div class="shortcut-emoji">${link.icon}</div>
+                <div class="shortcut-name">${escapeHtml(link.name)}</div>
+                <button class="shortcut-delete">×</button>
+            `;
+        }
+
+        // Add delete button event listener
+        item.querySelector('.shortcut-delete').addEventListener('click', (e) => {
+            e.preventDefault();
+            deleteUniversity(link.id);
         });
 
         grid.appendChild(item);

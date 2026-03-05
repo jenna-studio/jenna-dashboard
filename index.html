@@ -7,7 +7,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DotGothic16&family=Noto+Sans+SC:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/webfontworld/score/SCoreDream.css" />
     <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
     <!-- Pixel stars background decoration -->
@@ -64,11 +66,11 @@
                 </div>
                 <div class="widget-body">
                     <div class="calendar-sync-container">
-                        <div class="sync-status" id="syncStatus">
-                            <span class="status-dot"></span>
-                            <span class="status-text" id="syncStatusText">No events synced</span>
-                        </div>
-                        <button class="pixel-btn-small" id="syncCalendarBtn" title="Run the Sync Shortcut to update events">🔄 SYNC</button>
+                        <button class="pixel-btn-small" id="todayBtn">TODAY</button>
+                        <span class="today-date" id="todayDate"></span>
+                        <button class="pixel-btn-small" id="syncCalendarBtn" title="Run the Sync Shortcut to update events">
+                            <i data-lucide="refresh-cw"></i>
+                        </button>
                     </div>
                     <div class="calendar-nav">
                         <button class="pixel-btn-small" id="prevMonth">◄</button>
@@ -76,6 +78,32 @@
                         <button class="pixel-btn-small" id="nextMonth">►</button>
                     </div>
                     <div class="calendar-grid" id="calendarGrid"></div>
+                </div>
+            </div>
+
+            <!-- Dev Tools Widget -->
+            <div class="widget widget-medium dev-tools-widget" data-color="green">
+                <div class="widget-header">
+                    <span class="widget-icon">⚙️</span>
+                    <h2>DEV TOOLS</h2>
+                    <span class="widget-close">×</span>
+                </div>
+                <div class="widget-body">
+                    <div class="shortcuts-grid" id="devToolsGrid"></div>
+                    <button id="addDevToolBtn" class="pixel-btn pixel-btn-full">+ ADD DEV TOOL</button>
+                </div>
+            </div>
+
+            <!-- University Widget -->
+            <div class="widget widget-medium university-widget" data-color="skyblue">
+                <div class="widget-header">
+                    <span class="widget-icon">🎓</span>
+                    <h2>UNIVERSITY</h2>
+                    <span class="widget-close">×</span>
+                </div>
+                <div class="widget-body">
+                    <div class="shortcuts-grid" id="universityGrid"></div>
+                    <button id="addUniversityBtn" class="pixel-btn pixel-btn-full">+ ADD LINK</button>
                 </div>
             </div>
 
@@ -102,19 +130,6 @@
                 <div class="widget-body">
                     <div class="shortcuts-grid" id="aiToolsGrid"></div>
                     <button id="addAIToolBtn" class="pixel-btn pixel-btn-full">+ ADD AI TOOL</button>
-                </div>
-            </div>
-
-            <!-- Dev Tools Widget -->
-            <div class="widget widget-medium dev-tools-widget" data-color="green">
-                <div class="widget-header">
-                    <span class="widget-icon">⚙️</span>
-                    <h2>DEV TOOLS</h2>
-                    <span class="widget-close">×</span>
-                </div>
-                <div class="widget-body">
-                    <div class="shortcuts-grid" id="devToolsGrid"></div>
-                    <button id="addDevToolBtn" class="pixel-btn pixel-btn-full">+ ADD DEV TOOL</button>
                 </div>
             </div>
 
@@ -300,6 +315,28 @@
                 <input type="text" id="devToolIcon" class="pixel-input" placeholder="⚙️ or https://logo.png">
 
                 <button id="saveDevToolBtn" class="pixel-btn pixel-btn-full">SAVE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for adding university links -->
+    <div id="universityModal" class="modal">
+        <div class="modal-content pixel-window">
+            <div class="modal-header">
+                <h3>ADD UNIVERSITY LINK</h3>
+                <span class="modal-close university-modal-close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <label class="pixel-label">NAME:</label>
+                <input type="text" id="universityName" class="pixel-input" placeholder="Link name..." maxlength="15">
+
+                <label class="pixel-label">URL:</label>
+                <input type="text" id="universityUrl" class="pixel-input" placeholder="https://...">
+
+                <label class="pixel-label">ICON (EMOJI OR IMAGE URL):</label>
+                <input type="text" id="universityIcon" class="pixel-input" placeholder="📚 or https://logo.png">
+
+                <button id="saveUniversityBtn" class="pixel-btn pixel-btn-full">SAVE</button>
             </div>
         </div>
     </div>
